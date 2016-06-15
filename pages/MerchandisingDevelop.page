@@ -178,7 +178,8 @@
 							<div ng-show="!upsertBrandImage">
 								<span  id="customImageView" ng-click="upsertBrandImage = true">Brand Image</span><span class="icon-loop2" ng-click="upsertBrandImage = true"><i class="fa fa-cloud-upload" ng-click="upsertBrandImage = true" aria-hidden="true"></i></span>
 								<div id="MerchandisingBrandMarkContainer" style="width:500px; height: 500px; top: 23.5px; position: absolute;" merch-droppable="droppable">
-									<canvas id="Brand" class="Brand" width= "500px" height= "500px" style="position: absolute; z-index: 25; width: 500px; height: 500px; left: 0px; top: 0px; -webkit-user-select: none; cursor: default;" onclick="mouseclickHandler(this)"></canvas>
+									<canvas id="Brand" class="Brand" width= "500px" height= "500px" style="position: absolute; z-index: 25; width: 500px; height: 500px; left: 0px; top: 0px; -webkit-user-select: none; cursor: default;"></canvas>
+										<!--left: 0px; top: 0px; -webkit-user-select: none; cursor: default;" onclick="mouseclickHandler(this)"></canvas>-->
 								</div>
 								<img id="Img" src="{{attachments.brandImageURL}}"></img>
 							</div>
@@ -614,17 +615,19 @@
 							ev.preventDefault();
 							scope.upsertMarks = true;
 							console.log(scope.upsertMarks);
-							if (ev.dataTransfer.getData("text") === 'arrow') {
-								 ArrowService.addArrow(ev.target.className, scope.objColor, ev.layerX, ev.layerY);
-							}
-							if (ev.dataTransfer.getData("text") === 'box') {
-								 BoxService.addBox(ev.target.className, scope.objColor, ev.layerX, ev.layerY);
-							}
-							if (ev.dataTransfer.getData("text") === 'line') {
-								 LineService.addLine(ev.target.className, scope.objColor, ev.layerX, ev.layerY);
-							}
-							if (ev.dataTransfer.getData("text") === 'text') {
-								 TextService.addText(ev.target.className, scope.objColor, ev.layerX, ev.layerY);
+							if (ev.target.className.indexOf('Customer') > -1) {
+								if (ev.dataTransfer.getData("text") === 'arrow') {
+									 ArrowService.addArrow(scope.objColor, ev.layerX, ev.layerY);
+								}
+								if (ev.dataTransfer.getData("text") === 'box') {
+									 BoxService.addBox(scope.objColor, ev.layerX, ev.layerY);
+								}
+								if (ev.dataTransfer.getData("text") === 'line') {
+									 LineService.addLine(scope.objColor, ev.layerX, ev.layerY);
+								}
+								if (ev.dataTransfer.getData("text") === 'text') {
+									 TextService.addText(scope.objColor, ev.layerX, ev.layerY);
+								}
 							}
 						};
 					}
@@ -755,24 +758,6 @@
 	 * make brand canvas uneditable
 	 */
 
-	function setCanvasZoom(background, canv) {
-		if (background.getWidth() < $(window).width()) {
-		    zoom = $(window).height() / background.getHeight();
-
-		    if ((zoom * background.getWidth()) > $(window).width()) {
-		        zoom = $(window).width() / background.getWidth();
-		    }
-
-		} else {
-		    zoom = $(window).width() / background.getWidth();
-
-		    if ((zoom * background.getHeight()) > $(window).height()) {
-		        zoom = $(window).height() / background.getHeight();
-		    }
-		}
-		canv.setZoom(zoom);
-	}
-
 	var fontControl = $('#font-control');
 
 	function textBoxChanged() {
@@ -787,18 +772,7 @@
 		var btnTop = y-10;
 		var fillBtn = '<img src="{!URLFOR($Resource.buttons, 'fill.png')}" class="fillBtn" style="position:absolute;top:'+btnTop+'px;left:'+btnLeft+'px;cursor:pointer;width:20px;height:20px;opacity:0.3; z-index: 999;"/>';
 		fillBtn.selectable = false;
-		switch (canvasId) {
-			case 'Brand': $("#MerchandisingBrandMarkContainer").append(fillBtn); break
-			case 'Customer': $("#MerchandisingCustomerMarkContainer").append(fillBtn); break
-		}
-		/*fabric.loadSVGFromURL('{!URLFOR($Resource.buttons, 'fill.svg')}', function(objects, options) {
-			var myobj = fabric.util.groupSVGElements(objects, options);
-			myobj.set({left: btnLeft, top: btnTop}).scale(0.5);
-			myobj.selectable = false;
-			myobj.hoverCursor = 'pointer';
-			myobj.opacity = 0.5;
-			canvas.add(myobj);
-		});*/
+		$("#MerchandisingCustomerMarkContainer").append(fillBtn);
 	}
 
 	function addDelBtn(x, y) {
@@ -808,11 +782,7 @@
 
 	    var delBtn = '<img src="{!URLFOR($Resource.buttons, 'delete.png')}" class="delBtn" style="position:absolute;top:'+btnTop+'px;left:'+btnLeft+'px;cursor:pointer;width:18px;height:18px;opacity:0.3; z-index: 999;"/>';
     	delBtn.selectable = false;
-    	console.log(canvasId);
-		switch (canvasId) {
-			case 'Brand': $("#MerchandisingBrandMarkContainer").append(delBtn); break
-			case 'Customer': $("#MerchandisingCustomerMarkContainer").append(delBtn); break
-		}
+		$("#MerchandisingCustomerMarkContainer").append(delBtn);
 	}
 
 	$(document).on('click',".fillBtn",function(){
@@ -905,20 +875,6 @@
     	}
 	}
 
-/*	brand.on({
-	    'object:scaling': function(e) {
-	    	activeCanvas = brand;
-			canvasId = this.lowerCanvasEl.id;
-	    	$(".fillBtn").remove();
-	    	$(".delBtn").remove();
-	        var obj = e.target;
-	        if(obj.myCustomOptionKeepStrokeWidth){
-	            var newStrokeWidth = obj.myCustomOptionKeepStrokeWidth / ((obj.scaleX + obj.scaleY) / 2);
-	            obj.set('strokeWidth',newStrokeWidth);
-	        }
-	    }
-	});*/
-
 	customer.on({
 	    'object:scaling': function(e) {
 	    	activeCanvas = customer;
@@ -933,28 +889,6 @@
 	    }
 	});
 
-
-/*	brand.on('object:selected',function(e){
-		customer.deactivateAll().renderAll();
-		activeCanvas = brand;
-		console.log(activeCanvas);
-		canvasId = this.lowerCanvasEl.id;
-		savePrevColor();
-		console.log(canvasId);
-		var objType = activeCanvas.getActiveObject().get('type');
-		console.log(">>TYPE="+objType);
-		if (objType === 'group' || objType === 'i-text') {
-			document.getElementById("draw_color").value = activeCanvas.getActiveObject().get('fill');
-			if (objType === 'i-text') {	document.getElementById("font-control").value = activeCanvas.getActiveObject().get('fontFamily'); }
-		}
-		else if (objType === 'line' || objType === 'path')
-			{document.getElementById("draw_color").value = activeCanvas.getActiveObject().get('stroke');}
-		addDelBtn(e.target.oCoords.tr.x, e.target.oCoords.tr.y);
-		if (e.target.get('type') === 'path') {
-			e.target.setControlsVisibility(HideBoxControls);
-	        addFillBtn(e.target.oCoords.tr.x, e.target.oCoords.tr.y);
-		}
-	});*/
 
 	customer.on('object:selected',function(e){
 		brand.deactivateAll().renderAll();
@@ -976,16 +910,6 @@
 		}
 	});
 
-/*	brand.on('object:modified',function(e){
-		activeCanvas = brand;
-		canvasId = this.lowerCanvasEl.id;
-		addDelBtn(e.target.oCoords.tr.x, e.target.oCoords.tr.y);
-		if (e.target.get('type') === 'path') {
-			e.target.setControlsVisibility(HideBoxControls);
-	        addFillBtn(e.target.oCoords.tr.x, e.target.oCoords.tr.y);
-		}
-	});*/
-
 	customer.on('object:modified',function(e){
 		activeCanvas = customer;
 		canvasId = this.lowerCanvasEl.id;
@@ -1005,36 +929,6 @@
 		overObj = false;
 		console.log("object:out");
 	});
-
-/*	brand.on('mouse:up', function(o){
-	  canvasId = this.lowerCanvasEl.id;
-	  activeCanvas = brand;
-	  console.log(">> canvasId="+canvasId);
-	  isDown = false;
-	  if (movingObj) {console.log("object moved!");
-		  var pointer = activeCanvas.getPointer(o.e);
-		  origY = pointer.y;
-		  var objType = activeCanvas.getActiveObject().get('type');
-		  if (origY > 30 && startY < 30) {
-			  	switch (objType) {
-					case 'group':
-			  			addArrow(document.getElementById("draw_color").value, 10, 10);
-			  			break
-					case 'path':
-			  			addBox(document.getElementById("draw_color").value, 120, 0);
-			  			break
-					case 'line':
-			  			addLine(document.getElementById("draw_color").value, 230, 10);
-			  			break
-					case 'i-text':
-			  			addText(document.getElementById("draw_color").value, 340, 0, fontControl.val());
-			  			break
-		  		}
-		  }
-	  movingObj = false;}
-	  //var hoverTarget = canvas.findTarget(event.e, false);
-	  //if (hoverTarget !== null) {document.getElementById("draw_color").value = canvas.getActiveObject().get('color'); }
-	});*/
 
 	customer.on('mouse:up', function(o){
 	  canvasId = this.lowerCanvasEl.id;
@@ -1062,16 +956,7 @@
 		  		}
 		  }
 	  movingObj = false;}
-	  //var hoverTarget = canvas.findTarget(event.e, false);
-	  //if (hoverTarget !== null) {document.getElementById("draw_color").value = canvas.getActiveObject().get('color'); }
 	});
-
-/*	brand.on('object:moving', function (o) {
-		$(".fillBtn").remove();
-		$(".delBtn").remove();
-		o.target.bringToFront();
-	    movingObj = true;
-	});*/
 
 	customer.on('object:moving', function (o) {
 		$(".fillBtn").remove();
@@ -1080,20 +965,10 @@
 	    movingObj = true;
 	});
 
-/*	brand.on('object:rotating', function (o) {
-		$(".fillBtn").remove();
-		$(".delBtn").remove();
-	});*/
-
 	customer.on('object:rotating', function (o) {
 		$(".fillBtn").remove();
 		$(".delBtn").remove();
 	});
-
-/*	brand.on('mouse:move', function(o){
-	  if (!isDown) return;
-	  var pointer = brand.getPointer(o.e);
-	});*/
 
 	customer.on('mouse:move', function(o){
 	  if (!isDown) return;
@@ -1246,10 +1121,11 @@
 
 	function mouseclickHandler(elem) {
 		console.log(elem);
-		if(elem.className.indexOf('Brand') > -1) {
+/*		if(elem.className.indexOf('Brand') > -1) {
 			activeCanvas = brand;
 		}
-		else if(elem.className.indexOf('Customer') > -1) {
+		else */
+		if(elem.className.indexOf('Customer') > -1) {
 			activeCanvas = customer;
 		}
 		console.log(activeCanvas);
@@ -1269,21 +1145,15 @@
 
 			return service;
 
-			function addArrow(selectedCanvas, color, x, y) {
+			function addArrow(color, x, y) {
 				var pts = [x+100,y,x,y];
 				setColor(color);
 				var triangle = createArrowHead(pts, color);
 				var line = createLine(pts, color);
 				var grp = new fabric.Group([triangle,line]);
 				setLineControls(grp);
-				if (selectedCanvas.indexOf('Brand') > -1) {
-/*					activeCanvas = brand;
-					brand.add(grp);*/
-				}
-				else {
-					activeCanvas = customer;
-					customer.add(grp);
-				}
+				activeCanvas = customer;
+				customer.add(grp);
 			}
 		}
 	})();
@@ -1302,7 +1172,7 @@
 
 			return service;
 
-			function addBox(selectedCanvas, color, x, y) {
+			function addBox(color, x, y) {
 				var path = new fabric.Path(roundPathCorners('M0 0 L 100 0 L100 30 L 0 30 Z', 4, false), {
 					stroke: color,
 					strokeWidth: 3,
@@ -1312,14 +1182,8 @@
 				});
 				path.set({ left: x, top: y });
 				path.myCustomOptionKeepStrokeWidth = 3;
-				if (selectedCanvas.indexOf('Brand') > -1) {
-/*					activeCanvas = brand;
-					brand.add(path);*/
-				}
-				else {
-					activeCanvas = customer;
-					customer.add(path);
-				}
+				activeCanvas = customer;
+				customer.add(path);
 				return path;
 			}
 		}
@@ -1339,19 +1203,13 @@
 
 			return service;
 
-			function addLine(selectedCanvas, color, x, y) {
+			function addLine(color, x, y) {
 				var pts = [x+100,y,x,y];
 				setColor(color);
 				var line = createLine(pts, color);
 				setLineControls(line);
-				if (selectedCanvas.indexOf('Brand') > -1) {
-/*					activeCanvas = brand;
-					brand.add(line);*/
-				}
-				else {
-					activeCanvas = customer;
-					customer.add(line);
-				}
+				activeCanvas = customer;
+				customer.add(line);
 				return line;
 			}
 		}
@@ -1371,7 +1229,7 @@
 
 			return service;
 
-			function addText(selectedCanvas, color, x, y, font_name) {
+			function addText(color, x, y, font_name) {
 				var pts = [x+100 , y, x, y];
 				var mytext = new fabric.IText('Text', {
 					fontFamily: font_name,
@@ -1380,14 +1238,8 @@
 					fontSize: 10,
 					fill: color,
 				});
-				if (selectedCanvas.indexOf('Brand') > -1) {
-/*					activeCanvas = brand;
-					brand.add(mytext);*/
-				}
-				else {
-					activeCanvas = customer;
-					customer.add(mytext);
-				}
+				activeCanvas = customer;
+				customer.add(mytext);
 			}
 		}
 	})();
