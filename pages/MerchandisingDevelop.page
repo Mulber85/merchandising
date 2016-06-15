@@ -153,22 +153,7 @@
 				</div>
 				<div style="position: absolute; z-index: 0; left: 25%; top: 18%; width: 1400px; height: 600px;">
 					<form enctype="multipart/form-data" method="post">
-						<div id="BrandImgContainer" style="width: 550px; height: 550px; display: inline; float: left;">
-							<div ng-if="upsertBrandImage">
-								<span style="font: 15pt bold; color: #bbb;">Drop Brand Image Here</span>
-								<input type="file" file-dropzone="[image/png, image/jpeg, image/gif]" file-name="ImageFileName.brandName" file-type="ImageFileType.brandType" fileread="image.brandImage"/>
-								<img id="Img" ng-src='{{image.brandImage}}' />
-							</div>
-							<div ng-show="!upsertBrandImage">
-								<span  id="customImageView" ng-click="upsertBrandImage = true">Brand Image</span><span class="icon-loop2" ng-click="upsertBrandImage = true"><i class="fa fa-cloud-upload" ng-click="upsertBrandImage = true" aria-hidden="true"></i></span>
-								<div id="MerchandisingBrandMarkContainer" style="width:500px; height: 500px; top: 23.5px; position: absolute;" merch-droppable="droppable">
-									<canvas id="Brand" class="Brand " width= "500px" height= "500px" style="position: absolute; z-index: 25; width: 500px; height: 500px; left: 0px; top: 0px; -webkit-user-select: none; cursor: default;" onclick="mouseclickHandler(this)"></canvas>
-								</div>
-								<img id="Img" src="{{attachments.brandImageURL}}"></img>
-							</div>
-						</div>
-
-						<div id="CustomerImgContainer" style="width: 550px; height: 550px; margin-left: 10%; display: inline; float: left;">
+						<div id="CustomerImgContainer" style="width: 550px; height: 550px; display: inline; float: left;">
 							<div ng-if="upsertCustomerImage">
 
 								<span style="font: 15pt bold; color: #bbb; ">Drop Customer Image Here</span>
@@ -181,6 +166,21 @@
 									<canvas id="Customer" class="Customer" width= "500px" height= "500px" style="position: absolute; z-index: 25; width: 500px; height: 500px; left: 0px; top: 0px; -webkit-user-select: none; cursor: default;" onclick="mouseclickHandler(this)"></canvas>
 								</div>
 								<img id="Img" src="{{attachments.customImageURL}}"></img>
+							</div>
+						</div>
+
+						<div id="BrandImgContainer" style="width: 550px; height: 550px; margin-left: 10%; display: inline; float: left;">
+							<div ng-if="upsertBrandImage">
+								<span style="font: 15pt bold; color: #bbb;">Drop Brand Image Here</span>
+								<input type="file" file-dropzone="[image/png, image/jpeg, image/gif]" file-name="ImageFileName.brandName" file-type="ImageFileType.brandType" fileread="image.brandImage"/>
+								<img id="Img" ng-src='{{image.brandImage}}' />
+							</div>
+							<div ng-show="!upsertBrandImage">
+								<span  id="customImageView" ng-click="upsertBrandImage = true">Brand Image</span><span class="icon-loop2" ng-click="upsertBrandImage = true"><i class="fa fa-cloud-upload" ng-click="upsertBrandImage = true" aria-hidden="true"></i></span>
+								<div id="MerchandisingBrandMarkContainer" style="width:500px; height: 500px; top: 23.5px; position: absolute;" merch-droppable="droppable">
+									<canvas id="Brand" class="Brand" width= "500px" height= "500px" style="position: absolute; z-index: 25; width: 500px; height: 500px; left: 0px; top: 0px; -webkit-user-select: none; cursor: default;" onclick="mouseclickHandler(this)"></canvas>
+								</div>
+								<img id="Img" src="{{attachments.brandImageURL}}"></img>
 							</div>
 						</div>
 					</form>
@@ -289,31 +289,31 @@
 		vm.customerControls = [];
 
 		/* fabric */
-		var brand = new fabric.Canvas('Brand');
 		var customer = new fabric.Canvas('Customer');
-
-		brand.isDrawingMode = false;
-		brand.freeDrawingBrush.width = 5;
-		brand.renderOnAddRemove  = true;
+		var brand = new fabric.Canvas('Brand');
 
 		customer.isDrawingMode = false;
 		customer.freeDrawingBrush.width = 5;
 		customer.renderOnAddRemove  = true;
 
+		brand.isDrawingMode = false;
+		brand.freeDrawingBrush.width = 5;
+		brand.renderOnAddRemove  = true;
+
 		$scope.attachments = [];
 		$scope.merchandisingMarksWrapper = [];
 		$scope.Loading = true;
-		$scope.accId = window.location.search.split('=')[1];
-		$scope.upsertBrandImage = false;
+		$scope.accId = window.location.search.split('=')[1].split('&')[0];
 		$scope.upsertCustomerImage = false;
+		$scope.upsertBrandImage = false;
 
 		dataManager.getAttachments($scope.accId, null, null).then(function(attachments) {
 			$scope.attachments = JSON.parse(attachments);
-			if ($scope.attachments === null || $scope.attachments.brandImageURL === null) {
-				$scope.upsertBrandImage = true;
-			}
 			if ($scope.attachments === null || $scope.attachments.customImageURL === null) {
 				$scope.upsertCustomerImage = true;
+			}
+			if ($scope.attachments === null || $scope.attachments.brandImageURL === null) {
+				$scope.upsertBrandImage = true;
 			}
 			$scope.Loading = false;
 		});
@@ -328,11 +328,11 @@
 				return;
 			}
 			for (var i = 0; i < $scope.merchandisingMarksWrapper.length; i++) {
-				if ($scope.merchandisingMarksWrapper[i].Name.indexOf('Brand') > -1) {
-					LoadCanvasService.loadCanvas('Brand', $scope.merchandisingMarksWrapper[i].Boxes);
-				}
-				else if ($scope.merchandisingMarksWrapper[i].Name.indexOf('Custom') > -1) {
+				if ($scope.merchandisingMarksWrapper[i].Name.indexOf('Custom') > -1) {
 					LoadCanvasService.loadCanvas('Custom', $scope.merchandisingMarksWrapper[i].Boxes);
+				}
+				else if ($scope.merchandisingMarksWrapper[i].Name.indexOf('Brand') > -1) {
+					LoadCanvasService.loadCanvas('Brand', $scope.merchandisingMarksWrapper[i].Boxes);
 				}
 			}
 
@@ -372,9 +372,9 @@
 			if ($scope.image.customImage == '' && $scope.image.brandImage == '') {
 				// alert("Please choose some image.");
 
+						var merchandisingCustomerMarkContainer = SaveCanvasService.saveCanvas('Customer');
 						var merchandisingBrandMarkContainer = SaveCanvasService.saveCanvas('Brand');
 						console.log(merchandisingBrandMarkContainer);
-						var merchandisingCustomerMarkContainer = SaveCanvasService.saveCanvas('Customer');
 						console.log(merchandisingCustomerMarkContainer);
 
 						dataManager.saveMerchandisingMarks($scope.accId, merchandisingBrandMarkContainer, merchandisingCustomerMarkContainer);
@@ -390,25 +390,26 @@
 						var newSecondImg = null;
 						console.log(attach);
 						if (attach[1] !== null && attach[1] !== undefined) {
-							newFirstImg = 'Brand' + ';' + attach[0].get("id");
-							newSecondImg = 'Custom' + ';' + attach[1].get("id");
+							newFirstImg = 'Custom' + ';' + attach[0].get("id");
+							newSecondImg = 'Brand' + ';' + attach[1].get("id");
 						}
-						else if ($scope.image.brandImage != '') {
-							newFirstImg = 'Brand' + ';' + attach[0].get("id");
+						else if ($scope.image.customImage != '') {
+							newFirstImg = 'Custom' + ';' + attach[0].get("id");
 						}
 						else {
-							newFirstImg = 'Custom' + ';' + attach[0].get("id");
+							newFirstImg = 'Brand' + ';' + attach[0].get("id");
 						}
 
 						dataManager.getAttachments($scope.accId, newFirstImg, newSecondImg).then(function(attachments) {
 							$scope.attachments = JSON.parse(attachments);
+							if ($scope.attachments !== null && $scope.attachments.customImageURL !== null) {
+								$scope.upsertCustomerImage = false;
+							}
 							if ($scope.attachments !== null && $scope.attachments.brandImageURL !== null) {
 								$scope.upsertBrandImage = false;
 
 							}
-							if ($scope.attachments !== null && $scope.attachments.customImageURL !== null) {
-								$scope.upsertCustomerImage = false;
-							}
+
 							$scope.image.customImage = '';
 							$scope.image.brandImage = '';
 							$scope.ImageFileName.brandName = '';
@@ -417,8 +418,8 @@
 
 
 
-						var merchandisingBrandMarkContainer = SaveCanvasService.saveCanvas();
 						var merchandisingCustomerMarkContainer = SaveCanvasService.saveCanvas();
+						var merchandisingBrandMarkContainer = SaveCanvasService.saveCanvas();
 
 						dataManager.saveMerchandisingMarks($scope.accId, merchandisingBrandMarkContainer, merchandisingCustomerMarkContainer);
 
@@ -734,23 +735,25 @@
 	var startY;
 	var prevColor;
 	var isDown;
+	document.getElementById("draw_color").value = "#FF0000";
 	var objColor = document.getElementById("draw_color").value;
-	document.getElementById("draw_color").value = "#47A1BF";
-	var brand = new fabric.Canvas('Brand');
 	var customer = new fabric.Canvas('Customer');
-	var activeCanvas = brand;
+	var brand = new fabric.Canvas('Brand');
+	var activeCanvas = customer;
 	var activeObject, initialCanvas;
 	var zoom = 0;
 	prevColor = objColor;
-
-	brand.isDrawingMode = false;
-	brand.freeDrawingBrush.width = 5;
-	brand.renderOnAddRemove  = true;
 
 	customer.isDrawingMode = false;
 	customer.freeDrawingBrush.width = 5;
 	customer.renderOnAddRemove  = true;
 
+	brand.isDrawingMode = false;
+	brand.freeDrawingBrush.width = 5;
+	brand.renderOnAddRemove  = true;
+	/*
+	 * make brand canvas uneditable
+	 */
 
 	function setCanvasZoom(background, canv) {
 		if (background.getWidth() < $(window).width()) {
@@ -902,7 +905,7 @@
     	}
 	}
 
-	brand.on({
+/*	brand.on({
 	    'object:scaling': function(e) {
 	    	activeCanvas = brand;
 			canvasId = this.lowerCanvasEl.id;
@@ -914,7 +917,7 @@
 	            obj.set('strokeWidth',newStrokeWidth);
 	        }
 	    }
-	});
+	});*/
 
 	customer.on({
 	    'object:scaling': function(e) {
@@ -931,7 +934,7 @@
 	});
 
 
-	brand.on('object:selected',function(e){
+/*	brand.on('object:selected',function(e){
 		customer.deactivateAll().renderAll();
 		activeCanvas = brand;
 		console.log(activeCanvas);
@@ -951,7 +954,7 @@
 			e.target.setControlsVisibility(HideBoxControls);
 	        addFillBtn(e.target.oCoords.tr.x, e.target.oCoords.tr.y);
 		}
-	});
+	});*/
 
 	customer.on('object:selected',function(e){
 		brand.deactivateAll().renderAll();
@@ -973,7 +976,7 @@
 		}
 	});
 
-	brand.on('object:modified',function(e){
+/*	brand.on('object:modified',function(e){
 		activeCanvas = brand;
 		canvasId = this.lowerCanvasEl.id;
 		addDelBtn(e.target.oCoords.tr.x, e.target.oCoords.tr.y);
@@ -981,7 +984,7 @@
 			e.target.setControlsVisibility(HideBoxControls);
 	        addFillBtn(e.target.oCoords.tr.x, e.target.oCoords.tr.y);
 		}
-	});
+	});*/
 
 	customer.on('object:modified',function(e){
 		activeCanvas = customer;
@@ -1003,7 +1006,7 @@
 		console.log("object:out");
 	});
 
-	brand.on('mouse:up', function(o){
+/*	brand.on('mouse:up', function(o){
 	  canvasId = this.lowerCanvasEl.id;
 	  activeCanvas = brand;
 	  console.log(">> canvasId="+canvasId);
@@ -1031,7 +1034,7 @@
 	  movingObj = false;}
 	  //var hoverTarget = canvas.findTarget(event.e, false);
 	  //if (hoverTarget !== null) {document.getElementById("draw_color").value = canvas.getActiveObject().get('color'); }
-	});
+	});*/
 
 	customer.on('mouse:up', function(o){
 	  canvasId = this.lowerCanvasEl.id;
@@ -1063,12 +1066,12 @@
 	  //if (hoverTarget !== null) {document.getElementById("draw_color").value = canvas.getActiveObject().get('color'); }
 	});
 
-	brand.on('object:moving', function (o) {
+/*	brand.on('object:moving', function (o) {
 		$(".fillBtn").remove();
 		$(".delBtn").remove();
 		o.target.bringToFront();
 	    movingObj = true;
-	});
+	});*/
 
 	customer.on('object:moving', function (o) {
 		$(".fillBtn").remove();
@@ -1077,20 +1080,20 @@
 	    movingObj = true;
 	});
 
-	brand.on('object:rotating', function (o) {
+/*	brand.on('object:rotating', function (o) {
 		$(".fillBtn").remove();
 		$(".delBtn").remove();
-	});
+	});*/
 
 	customer.on('object:rotating', function (o) {
 		$(".fillBtn").remove();
 		$(".delBtn").remove();
 	});
 
-	brand.on('mouse:move', function(o){
+/*	brand.on('mouse:move', function(o){
 	  if (!isDown) return;
 	  var pointer = brand.getPointer(o.e);
-	});
+	});*/
 
 	customer.on('mouse:move', function(o){
 	  if (!isDown) return;
@@ -1100,12 +1103,12 @@
 
 	function color()
 	{
-		return brand.freeDrawingBrush.color;
+		return customer.freeDrawingBrush.color;
 	}
 
 	function setColor(color)
 	{
-		brand.freeDrawingBrush.color = color;
+		customer.freeDrawingBrush.color = color;
 	}
 
 	function setLineControls(line)
@@ -1274,8 +1277,8 @@
 				var grp = new fabric.Group([triangle,line]);
 				setLineControls(grp);
 				if (selectedCanvas.indexOf('Brand') > -1) {
-					activeCanvas = brand;
-					brand.add(grp);
+/*					activeCanvas = brand;
+					brand.add(grp);*/
 				}
 				else {
 					activeCanvas = customer;
@@ -1310,8 +1313,8 @@
 				path.set({ left: x, top: y });
 				path.myCustomOptionKeepStrokeWidth = 3;
 				if (selectedCanvas.indexOf('Brand') > -1) {
-					activeCanvas = brand;
-					brand.add(path);
+/*					activeCanvas = brand;
+					brand.add(path);*/
 				}
 				else {
 					activeCanvas = customer;
@@ -1342,8 +1345,8 @@
 				var line = createLine(pts, color);
 				setLineControls(line);
 				if (selectedCanvas.indexOf('Brand') > -1) {
-					activeCanvas = brand;
-					brand.add(line);
+/*					activeCanvas = brand;
+					brand.add(line);*/
 				}
 				else {
 					activeCanvas = customer;
@@ -1378,8 +1381,8 @@
 					fill: color,
 				});
 				if (selectedCanvas.indexOf('Brand') > -1) {
-					activeCanvas = brand;
-					brand.add(mytext);
+/*					activeCanvas = brand;
+					brand.add(mytext);*/
 				}
 				else {
 					activeCanvas = customer;
