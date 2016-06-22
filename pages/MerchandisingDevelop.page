@@ -11,6 +11,8 @@
 <script src="https://code.jquery.com/jquery-1.12.4.min.js"  integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
 <apex:includeScript value="{!URLFOR($Resource.fabricjsmaster, '/dist/fabric.js')}"/>
 <apex:includeScript value="{!URLFOR($Resource.rounding, 'rounding.js')}"/>
+<apex:includeScript value="{!URLFOR($Resource.FileSaver, 'FileSaver.js')}"/>
+<apex:includeScript value="{!URLFOR($Resource.canvasToBlob, 'canvasToBlob.js')}"/>
 
 <style>
 
@@ -116,7 +118,7 @@
 </style>
 
 	<body ng-app="MerchandisingApp">
-		<div class="app" ng-controller="MerchandisingCtrl">
+		<div class="app" ng-controller="MerchandisingCtrl" id="MerchandisingCtrl">
 
 			<div class="sk-double-bounce" ng-show="Loading">
 				<div class="sk-child sk-double-bounce1"></div>
@@ -126,6 +128,7 @@
 				<div id="topSidebar" >
 					<div style="left:300px;position: absolute; z-index: 100;"><a class="button-small" value="Back" ng-href="{!LEFT($CurrentPage.URL,FIND('/',$CurrentPage.URL,9))}/{{accId}}">Back</a></div>
 					<div style="left:380px;position: absolute; z-index: 100;"><input class="button-small" type="button" value="Save" ng-click="save();" /></div>
+					<div style="left:460px;position: absolute; z-index: 100;"><input class="button-small" type="button" value="Save PNG" ng-click="savePNG();" /></div>
 					<div style="right:2%; position: absolute; font: 25pt bold; color: #bbb;" >Merchandising</div>
 				</div>
 
@@ -147,8 +150,18 @@
 					<div id="question" ng-focus="focusHandler($event)" class="Icon" tabindex="0" style="height: 140px;" merch-draggable="draggable">
 						<img id="question" width="50" height="50" src="{!URLFOR($Resource.merchandisingIcon, 'img/question.png')}"></img>
 					</div>
-					<div style="left: 20%; position: absolute; bottom: 5%; z-index: 50;">
+					<div style="left: 20%; position: absolute; bottom: 7%; z-index: 50;">
 						<label style="font: 15pt bold; color: #000;">Color: </label><input type="color" id="draw_color" onchange="changeColorGroup()" onclick="savePrevColor()" style="z-index: 50"></input>
+					</div>
+					<div style="left: 20%; position: absolute; bottom: 3%; z-index: 50;">
+						<label for="font-control" style="font: 15pt bold; color: #000;">Font: </label>
+		                <select id="font-control" name="font-control" onchange="textBoxChanged()">
+		                    <option value="Arial">Arial</option>
+		                    <option value="Courier New">Courier</option>
+		                    <option value="Tahoma">Tahoma</option>
+		                    <option value="Times New Roman">Times</option>
+		                    <option value="Verdana">Verdana</option>
+		                </select>
 					</div>
 				</div>
 				<div style="position: absolute; z-index: 0; left: 25%; top: 18%; width: 1400px; height: 600px;">
@@ -158,7 +171,7 @@
 
 								<span style="font: 15pt bold; color: #bbb; ">Drop Customer Image Here</span>
 								<input type="file" file-dropzone="[image/png, image/jpeg, image/gif]" file-name="ImageFileName.customName" file-type="ImageFileType.customType" fileread="image.customImage"/>
-								<img id="Img" ng-src='{{image.customImage}}' />
+								<img id="Img" ng-src='{{image.customImage}}'/>
 							</div>
 							<div ng-show="!upsertCustomerImage">
 								<span id="customImageView" ng-click="upsertCustomerImage = true">Customer Image</span><span class="icon-loop2" ng-click="upsertCustomerImage = true"><i class="fa fa-cloud-upload " aria-hidden="true" ng-click="upsertCustomerImage = true"></i></span>
@@ -179,7 +192,6 @@
 								<span  id="customImageView" ng-click="upsertBrandImage = true">Brand Image</span><span class="icon-loop2" ng-click="upsertBrandImage = true"><i class="fa fa-cloud-upload" ng-click="upsertBrandImage = true" aria-hidden="true"></i></span>
 								<div id="MerchandisingBrandMarkContainer" style="width:500px; height: 500px; top: 23.5px; position: absolute;" merch-droppable="droppable">
 									<canvas id="Brand" class="Brand" width= "500px" height= "500px" style="position: absolute; z-index: 25; width: 500px; height: 500px; left: 0px; top: 0px; -webkit-user-select: none; cursor: default;"></canvas>
-										<!--left: 0px; top: 0px; -webkit-user-select: none; cursor: default;" onclick="mouseclickHandler(this)"></canvas>-->
 								</div>
 								<img id="Img" src="{{attachments.brandImageURL}}"></img>
 							</div>
@@ -198,8 +210,21 @@
 		sforce.connection.sessionId = '{!GETSESSIONID()}';
 	})();
 
+    app.config(['$httpProvider',function ($httpProvider) {
+        var sessionId = "{!$Api.Session_ID}";
+        $httpProvider.defaults.useXDomain = true;
+        //$httpProvider.defaults.withCredentials = true;
+        delete $httpProvider.defaults.headers.common["X-Requested-With"];
+        $httpProvider.defaults.headers.common["Accept"] = 'application/x-www-form-urlencoded; charset=UTF-8';//"application/jsonp";
+        $httpProvider.defaults.headers.common["Access-Control-Allow-Origin"] = "*";
+        $httpProvider.defaults.headers.common['Access-Control-Allow-Methods'] = "GET, POST, PUT, DELETE, OPTIONS";
+        $httpProvider.defaults.headers.common['Access-Control-Allow-Headers'] = "Content-Type, Authorization, Accept, X-Requested-With, X-PINGOTHER, Origin";
+        $httpProvider.defaults.headers.common["Content-Type"] = 'application/x-www-form-urlencoded; charset=UTF-8';//"application/json";
+        $httpProvider.defaults.headers.common['Authorization'] = "Bearer " + sessionId ;
+        $httpProvider.defaults.headers.common['X-User-Agent'] = "MyClient" ;
+     }])
 
-	app.service('dataManager', function($q) {
+	app.service('dataManager', function($http, $q) {
 		return {
 			getAttachments : function(accId, newFirstImg, newSecondImg) {
 				var deferred = $q.defer();
@@ -213,6 +238,24 @@
 						if (event.status) {
 							deferred.resolve(result);
 							console.log('OK');
+				            $http({url: window.location.origin + '/services/data/v37.0/sobjects/Attachment/' + JSON.parse(result).customImageURL.replace('/servlet/servlet.FileDownload?file=', '') + '/body', method: 'GET', responseType : 'arraybuffer'}).success(function(data, status, response, headers) {
+				                deferred.resolve(data);
+								console.log('data.byteLength='+data.byteLength);
+								console.log('typeof(data)='+typeof(data));
+								var binary = '';
+							    var bytes = new Uint8Array( data );
+							    var len = bytes.byteLength;
+							    for (var i = 0; i < len; i++) {
+							        binary += String.fromCharCode( bytes[ i ] );
+							    }
+							    var base64 = 'data:image/png;base64,' + window.btoa( binary );
+							    console.log(base64);
+				                imgToLoad(base64);
+				            }).error(function(err, status, response, headers) {
+				            	console.log(headers);
+				                console.log(err);
+				                deferred.reject(err);
+				            });
 						}
 						else {
 							deferred.reject(event);
@@ -319,7 +362,7 @@
 			$scope.Loading = false;
 		});
 
-		dataManager.getMerchandisingMarks($scope.accId).then(function(merchandisingMarksWrapper) {
+ 		dataManager.getMerchandisingMarks($scope.accId).then(function(merchandisingMarksWrapper) {
 			$scope.merchandisingMarksWrapper = JSON.parse(merchandisingMarksWrapper);
 			// var merchandisingBrandMarkContainer = document.getElementById('MerchandisingBrandMarkContainer');
 			// var merchandisingCustomerMarkContainer = document.getElementById('MerchandisingCustomerMarkContainer');
@@ -349,6 +392,14 @@
 		$scope.ImageFileType = {};
 		$scope.ImageFileType.brandType = '';
 		$scope.ImageFileType.customType = '';
+
+		$scope.savePNG = function() {
+			var canvas = document.getElementById("Customer");
+			var ctx = canvas.getContext("2d");
+			canvas.toBlobHD(function(blob) {
+			    saveAs(blob, "Customer.png");
+			});
+	    }
 
 		$scope.save = function() {
 			$scope.Loading = true;
@@ -443,8 +494,14 @@
 		}
 
 		$scope.focusHandler = function focusHandler(ev) {
-			console.log(ev.srcElement.id);
-			FocusService.focusCanvas(ev.srcElement.id);
+			console.log('> handler element id: ' + ev.srcElement.id);
+			ev = (ev) ? ev : ((window.event) ? window.event : null);
+			if(ev) {
+				var getID = (ev.target) ? ev.target : event.srcElement;
+				console.log('> getID: ' + getID.id);
+				FocusService.focusCanvas(getID.id);
+			}
+			ev = null;
 		}
 
 	});
@@ -758,7 +815,62 @@
 	 * make brand canvas uneditable
 	 */
 
+	customer.observe('object:scaling', function (e) {
+		var obj = e.target;
+	  if(obj.getHeight() > obj.canvas.height || obj.getWidth() > obj.canvas.width){
+	   	obj.setScaleY(obj.originalState.scaleY);
+	   	obj.setScaleX(obj.originalState.scaleX);
+	  }
+	  obj.setCoords();
+	  if(obj.getBoundingRect().top - (obj.cornerSize / 2) < 0 ||
+	  	 obj.getBoundingRect().left -  (obj.cornerSize / 2) < 0) {
+	    obj.top = Math.max(obj.top, obj.top-obj.getBoundingRect().top + (obj.cornerSize / 2));
+	    obj.left = Math.max(obj.left, obj.left-obj.getBoundingRect().left + (obj.cornerSize / 2));
+	  }
+	  if(obj.getBoundingRect().top+obj.getBoundingRect().height + obj.cornerSize  > obj.canvas.height || obj.getBoundingRect().left+obj.getBoundingRect().width + obj.cornerSize  > obj.canvas.width) {
+
+	    obj.top = Math.min(obj.top, obj.canvas.height-obj.getBoundingRect().height+obj.top-obj.getBoundingRect().top - obj.cornerSize / 2);
+	    obj.left = Math.min(obj.left, obj.canvas.width-obj.getBoundingRect().width+obj.left-obj.getBoundingRect().left - obj.cornerSize /2);
+	  }
+	});
+
+	customer.observe('object:moving', function (e) {
+		var obj = e.target;
+	  if(obj.getHeight() > obj.canvas.height || obj.getWidth() > obj.canvas.width){
+	   	obj.setScaleY(obj.originalState.scaleY);
+	   	obj.setScaleX(obj.originalState.scaleX);
+	  }
+	  obj.setCoords();
+	  if(obj.getBoundingRect().top - (obj.cornerSize / 2) < 0 ||
+	  	 obj.getBoundingRect().left -  (obj.cornerSize / 2) < 0) {
+	    obj.top = Math.max(obj.top, obj.top-obj.getBoundingRect().top + (obj.cornerSize / 2));
+	    obj.left = Math.max(obj.left, obj.left-obj.getBoundingRect().left + (obj.cornerSize / 2));
+	  }
+	  if(obj.getBoundingRect().top+obj.getBoundingRect().height + obj.cornerSize  > obj.canvas.height || obj.getBoundingRect().left+obj.getBoundingRect().width + obj.cornerSize  > obj.canvas.width) {
+
+	    obj.top = Math.min(obj.top, obj.canvas.height-obj.getBoundingRect().height+obj.top-obj.getBoundingRect().top - obj.cornerSize / 2);
+	    obj.left = Math.min(obj.left, obj.canvas.width-obj.getBoundingRect().width+obj.left-obj.getBoundingRect().left - obj.cornerSize /2);
+	  }
+	});
+
 	var fontControl = $('#font-control');
+
+	function imgToLoad(imgBase64Data) {
+		fabric.Image.fromURL(imgBase64Data, function(oImg) {
+	      oImg.setLeft(0);
+	      oImg.setTop(0);
+	      oImg.set('selectable', false);
+	      oImg.hoverCursor = 'default';
+	      customer.setBackgroundImage(oImg);
+		  customer.backgroundImage.width = customer.getWidth();
+		  customer.backgroundImage.height = customer.getHeight();
+	      customer.renderAll();
+	      // customer.add(oImg);
+	      // customer.sendToBack(oImg);
+	      }, {
+	      crossOrigin: "Anonymous"
+	    });
+	}
 
 	function textBoxChanged() {
 		if(activeCanvas.getActiveObject()) {
@@ -766,30 +878,103 @@
 		}
 	}
 
+    function contrastButtons(x, y) {
+        var blockSize = 5,
+            invNeed = false,
+            canvasElement = document.getElementById('Customer'),
+            context = canvasElement.getContext("2d"),
+            data, width, height,
+            i = -4,
+            length,
+            rgb = {r:0,g:0,b:0},
+            count = 0;
+
+        if (!context) {
+            return defaultRGB;
+        }
+
+        height = 20;
+        width = 20;
+
+        try {
+            data = context.getImageData(x, y, width, height);
+        } catch(e) {
+        	console.log(e);
+            return false;
+        }
+
+        length = data.data.length;
+
+        while ( (i += blockSize * 4) < length ) {
+            ++count;
+            rgb.r += data.data[i];
+            rgb.g += data.data[i+1];
+            rgb.b += data.data[i+2];
+        }
+
+        // ~~ used to floor values
+        rgb.r = ~~(rgb.r/count);
+        rgb.g = ~~(rgb.g/count);
+        rgb.b = ~~(rgb.b/count);
+
+        console.log("r="+rgb.r+", g="+rgb.g+", b="+rgb.b);
+        var o = Math.round(((rgb.r * 299) + (rgb.g * 587) + (parseInt(rgb.b) * 114)) /1000);
+        console.log("avg color="+o);
+        if (o > 125) {
+            invNeed = false;
+            //console.log('>> BLACK <<');
+        } else {
+            invNeed = true;
+            //console.log('>> WHITE <<');
+        }
+        return invNeed;
+    }
+
 	function addFillBtn(x, y) {
 		$(".fillBtn").remove();
+        var imgToLoad = 'fill.png';
 		var btnLeft = x+5;
 		var btnTop = y-10;
-		var fillBtn = '<img src="{!URLFOR($Resource.buttons, 'fill.png')}" class="fillBtn" style="position:absolute;top:'+btnTop+'px;left:'+btnLeft+'px;cursor:pointer;width:20px;height:20px;opacity:0.3; z-index: 999;"/>';
+        // if (contrastButtons(btnLeft, btnTop)) {
+        //     imgToLoad = 'inv_' + imgToLoad;
+        // }
+		var fillBtn = '<img src="{!URLFOR($Resource.buttons, "'+ imgToLoad +'")}" class="fillBtn" style="position:absolute;top:'+btnTop+'px;left:'+btnLeft+'px;cursor:pointer;width:32px;height:32px;opacity:0.3; z-index: 999;"/>';
 		fillBtn.selectable = false;
 		$("#MerchandisingCustomerMarkContainer").append(fillBtn);
+        $(".fillBtn").hover(
+            function() {
+                $(this).stop().animate({"opacity": "1"}, "slow");
+            },
+            function() {
+                $(this).stop().animate({"opacity": "0.3"}, "slow");
+        });
 	}
 
 	function addDelBtn(x, y) {
 		$(".delBtn").remove();
+        var imgToLoad = 'delete.png';
 	    var btnLeft = x+5;
-	    var btnTop = y+14;
-
-	    var delBtn = '<img src="{!URLFOR($Resource.buttons, 'delete.png')}" class="delBtn" style="position:absolute;top:'+btnTop+'px;left:'+btnLeft+'px;cursor:pointer;width:18px;height:18px;opacity:0.3; z-index: 999;"/>';
+	    var btnTop = y+24;
+        // if (contrastButtons(btnLeft, btnTop)) {
+        //     imgToLoad = 'inv_' + imgToLoad;
+        // }
+	    var delBtn = '<img src="{!URLFOR($Resource.buttons, "'+ imgToLoad +'")}" class="delBtn" style="position:absolute;top:'+btnTop+'px;left:'+btnLeft+'px;cursor:pointer;width:32px;height:32px;opacity:0.3; z-index: 999;"/>';
     	delBtn.selectable = false;
 		$("#MerchandisingCustomerMarkContainer").append(delBtn);
+        $(".delBtn").hover(
+            function() {
+                $(this).stop().animate({"opacity": "1", "invert": "1"}, "slow");
+            },
+            function() {
+                $(this).stop().animate({"opacity": "0.3"}, "slow");
+        });
 	}
 
 	$(document).on('click',".fillBtn",function(){
 	    if(activeCanvas.getActiveObject())
 	    {
 			var isFill = activeCanvas.getActiveObject().get('fill');
-			if (isFill !== false) { activeCanvas.getActiveObject().setFill(false); }
+			if ((isFill !== false) && (isFill !== 'transparent')) { activeCanvas.getActiveObject().setFill(false); }
 			else { activeCanvas.getActiveObject().setFill(document.getElementById("draw_color").value); }
 			activeCanvas.getActiveObject().set({stroke: document.getElementById("draw_color").value});
 			activeCanvas.renderAll();
@@ -819,7 +1004,7 @@
         }
     });*/
 
-    $(document).on('mousedown', function(evt) {
+/*    $(document).on('mousedown', function(evt) {
 		  isDown = true;
 		  movingObj = false;
 		  var pointer = activeCanvas.getPointer(evt.e);
@@ -833,10 +1018,10 @@
 	        	$(".delBtn").remove();
 	    	}
 	      else if ((activeCanvas.getActiveObject().get('type') === 'group') || (activeCanvas.getActiveObject().get('type') === 'line') || (activeCanvas.getActiveObject().get('type') === 'i-text')) {$(".fillBtn").remove();}
-    });
+    });*/
 
 	window.onload = function() {
-		activeCanvas.setActiveObject(activeCanvas.item(1));
+		console.log('loaded...');
 	}
 
 	function savePrevColor(){
@@ -869,6 +1054,11 @@
 				case 'i-text':
 					activeCanvas.getActiveObject().setFill(document.getElementById("draw_color").value);
 					//canvas.getActiveObject().set({fill: document.getElementById("draw_color").value});
+					break
+				case 'rect':
+					var isFill = activeCanvas.getActiveObject().get('fill');
+					if (isFill !== false) { activeCanvas.getActiveObject().setFill(document.getElementById("draw_color").value); }
+					activeCanvas.getActiveObject().set({stroke: document.getElementById("draw_color").value});
 					break
 			}
 	        activeCanvas.renderAll();
@@ -904,7 +1094,7 @@
 		else if (objType === 'line' || objType === 'path')
 			{document.getElementById("draw_color").value = activeCanvas.getActiveObject().get('stroke');}
 		addDelBtn(e.target.oCoords.tr.x, e.target.oCoords.tr.y);
-		if (e.target.get('type') === 'path') {
+		if ((e.target.get('type') === 'path') || (e.target.get('type') === 'rect')) {
 			e.target.setControlsVisibility(HideBoxControls);
 	        addFillBtn(e.target.oCoords.tr.x, e.target.oCoords.tr.y);
 		}
@@ -914,7 +1104,7 @@
 		activeCanvas = customer;
 		canvasId = this.lowerCanvasEl.id;
 		addDelBtn(e.target.oCoords.tr.x, e.target.oCoords.tr.y);
-		if (e.target.get('type') === 'path') {
+		if ((e.target.get('type') === 'path') || (e.target.get('type') === 'rect')){
 			e.target.setControlsVisibility(HideBoxControls);
 	        addFillBtn(e.target.oCoords.tr.x, e.target.oCoords.tr.y);
 		}
@@ -930,7 +1120,7 @@
 		console.log("object:out");
 	});
 
-	customer.on('mouse:up', function(o){
+/*	customer.on('mouse:up', function(o){
 	  canvasId = this.lowerCanvasEl.id;
 	  activeCanvas = customer;
 	  console.log(">> canvasId="+canvasId);
@@ -956,7 +1146,7 @@
 		  		}
 		  }
 	  movingObj = false;}
-	});
+	});*/
 
 	customer.on('object:moving', function (o) {
 		$(".fillBtn").remove();
@@ -1052,8 +1242,8 @@
 		return triangle;
 	}
 
-	function addArrow(color, x, y) {
-		var pts = [x+100,y,x,y];
+	function addArrow(color, x, y, x1, y1) {
+		var pts = [x,y,x1,y1];
 		setColor(color);
 		var triangle = createArrowHead(pts, color);
 		var line = createLine(pts, color);
@@ -1084,7 +1274,7 @@
 	function addBox(color, x, y, w, h) {
         setColor(color);
 
-		var path = new fabric.Rect({
+		var rect = new fabric.Rect({
             top : y,
             left : x,
             // width : (w === undefined) ? 100 : w,
@@ -1093,8 +1283,9 @@
             stroke: color,
             strokeWidth: 3,
         });
-		activeCanvas.add(path);
-		return path;
+        rect.myCustomOptionKeepStrokeWidth = 3;
+		activeCanvas.add(rect);
+		return rect;
 	}
 
 	function addLine(color, x, y) {
@@ -1235,7 +1426,7 @@
 					fontFamily: font_name,
 					left: x,
 					top: y ,
-					fontSize: 10,
+					fontSize: 32,
 					fill: color,
 				});
 				activeCanvas = customer;
@@ -1326,45 +1517,44 @@
 					// else if (selectedCanvas.indexOf('Custom') > -1) {
 					// 	activeCanvas = customer;
 					// }
-						var circle, isDown, origX, origY, line, box, arrow, text, question, origY, origX;
+
+						var circle, isDown, origXX, origYY, line, box, arrow, text, question;
 						activeCanvas.deactivateAll().renderAll();
 						activeCanvas.selection = false;
 
 						activeCanvas.on('mouse:down', function(o){
 							isDown = true;
 							var pointer = activeCanvas.getPointer(o.e);
-							origX = pointer.x;
-							origY = pointer.y;
+							origXX = pointer.x;
+							origYY = pointer.y;
        //         				origX = o.e.offsetX;
 							// origY = o.e.offsetY;
 							console.log(objType);
-							switch (objType) {
-								case 'arrow':
-									arrow = addArrow(document.getElementById("draw_color").value, origX, origY);
-									break;
-								case 'box':
-									box = addBox(document.getElementById("draw_color").value, origX, origY, 0, 0);
-
-									// activeCanvas.on('mouse:move', function(o){
-									// 	var pointer = activeCanvas.getPointer(o.e);
-					    //                 var e = o.e;
-					    //                 box.set('width', pointer.x - origX);
-					    //                 box.set('height',  poiner.y - origY);
-									// });
-									// activeCanvas.on('mouse:up', function () {
-							  //           canvas.off('mouse:move');
-							  //       });
-									break;
-								case 'line':
-									line = addLine(document.getElementById("draw_color").value, origX, origY);
-									break;
-								case 'text':
-									text = addText(document.getElementById("draw_color").value, origX, origY, fontControl.val());
-									break;
-								case 'question':
-									question = addText(document.getElementById("draw_color").value, origX, origY, fontControl.val());
-								break;
+	 			            if(!activeCanvas.getActiveObject())
+				            	{
+				                	$(".fillBtn").remove();
+				                	$(".delBtn").remove();
+									switch (objType) {
+										case 'arrow':
+											arrow = addArrow(document.getElementById("draw_color").value, origXX, origYY, origXX, origYY);
+											break;
+										case 'box':
+											box = addBox(document.getElementById("draw_color").value, origXX, origYY, 0, 0);
+											break;
+										case 'line':
+											line = addLine(document.getElementById("draw_color").value, origXX, origYY);
+											break;
+										case 'text':
+											text = addText(document.getElementById("draw_color").value, origXX, origYY, fontControl.val());
+											break;
+										case 'question':
+											question = addText(document.getElementById("draw_color").value, origXX, origYY, fontControl.val());
+										break;
+									}
 							}
+				            else if ((activeCanvas.getActiveObject().get('type') === 'group') || (activeCanvas.getActiveObject().get('type') === 'line') || (activeCanvas.getActiveObject().get('type') === 'i-text')) {$(".fillBtn").remove(); $(".ansBtn").remove();}
+				            else if (activeCanvas.getActiveObject().get('type') === 'textbox') {$(".fillBtn").remove();}
+				            else if (activeCanvas.getActiveObject().get('type') === 'path') {$(".ansBtn").remove();}
 					});
 
 
@@ -1372,41 +1562,73 @@
 							if (!isDown) return;
 
 							var pointer = activeCanvas.getPointer(o.e);
+							if(!activeCanvas.getActiveObject()) {
+								switch (objType) {
+									case 'arrow':
+										arrow.Line.set({x1:pointer.x, y1:pointer.y});
 
-							switch (objType) {
-								case 'arrow':
-									arrow.Line.set({x1:pointer.x, y1:pointer.y});
-
-									var curAngle = arrow.Triangle.getAngle();
-									var dy = pointer.y - origY;
-									var dx = pointer.x - origX;
-				    				var theta = Math.atan2(dy, dx); // range (-PI, PI]
-									theta *= 180 / Math.PI; // rads to degs, range (-180, 180]
-									if (theta < 0) theta = 360 + theta; // range [0, 360)
-				    				arrow.Triangle.setAngle(theta -	 90);
-									break;
-								case 'box':
-									box.set('width', pointer.x - origX);
-				                    box.set('height', pointer.y - origY);
-									break;
-								case 'line':
-									line.set({x2: pointer.x, y2: pointer.y });
-									break;
-								case 'text':
-									text.set('fontSize', pointer.x - origX);
-				                    // text.set('height', pointer.y - origY)
-									break;
-								case 'question':
-									question(document.getElementById("draw_color").value, 340, 0, fontControl.val());
-									break;
-							}
-  							activeCanvas.renderAll();
+										var curAngle = arrow.Triangle.getAngle();
+										var dy = pointer.y - origYY;
+										var dx = pointer.x - origXX;
+					    				var theta = Math.atan2(dy, dx); // range (-PI, PI]
+										theta *= 180 / Math.PI; // rads to degs, range (-180, 180]
+										if (theta < 0) theta = 360 + theta; // range [0, 360)
+					    				arrow.Triangle.setAngle(theta -	 90);
+										break;
+									case 'box':
+										box.set('width', pointer.x - origXX);
+					                    box.set('height', pointer.y - origYY);
+										break;
+									case 'line':
+										line.set({x2: pointer.x, y2: pointer.y });
+										break;
+									case 'text':
+										text.set('fontSize', pointer.x - origXX);
+					                    // text.set('height', pointer.y - origY)
+										break;
+									case 'question':
+										question(document.getElementById("draw_color").value, 340, 0, fontControl.val());
+										break;
+								}
+	  							activeCanvas.renderAll();
+  							}
 						});
 
 						activeCanvas.on('mouse:up', function(o){
 							isDown = false;
-							activeCanvas.off('mouse:move');
-							activeCanvas.off('mouse:down');
+ 					        var pointer = activeCanvas.getPointer(o.e);
+ 					        if(!activeCanvas.getActiveObject()) {
+								switch (objType) {
+									case 'arrow':
+										if ((Math.abs(pointer.x - origXX) > 10) || (Math.abs(pointer.y - origYY) > 10)) {
+											var group = new fabric.Group([arrow.Triangle, arrow.Line]);
+											//setLineControls(grp);
+											activeCanvas.add(group);
+										}
+										activeCanvas.remove(arrow.Triangle);
+										activeCanvas.remove(arrow.Line);
+										break
+										//activeCanvas.setActiveObject(grp);
+									case 'box':
+										if ((Math.abs(pointer.x - origXX) <= 10) && (Math.abs(pointer.y - origYY) <= 10)) {
+											activeCanvas.remove(box);
+										} else box.setCoords();
+										break
+									case 'line':
+										if ((Math.abs(pointer.x - origXX) <= 10) && (Math.abs(pointer.y - origYY) <= 10)) {
+											activeCanvas.remove(line);
+										} else line.setCoords();
+										break
+									case 'text':
+										if (Math.abs(pointer.x - origXX) <= 20) {
+											activeCanvas.remove(text);
+										} else text.setCoords();
+										break
+									}
+								activeCanvas.renderAll();
+								//activeCanvas.off('mouse:move');
+								//activeCanvas.off('mouse:down');
+							}
 						});
 				}
 			}
