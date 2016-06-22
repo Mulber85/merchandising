@@ -671,6 +671,7 @@
 						return function(ev) {
 							ev.preventDefault();
 							scope.upsertMarks = true;
+							scope.objColor = document.getElementById("draw_color").value;
 							console.log(scope.upsertMarks);
 							if (ev.target.className.indexOf('Customer') > -1) {
 								if (ev.dataTransfer.getData("text") === 'arrow') {
@@ -683,7 +684,7 @@
 									 LineService.addLine(scope.objColor, ev.layerX, ev.layerY);
 								}
 								if (ev.dataTransfer.getData("text") === 'text') {
-									 TextService.addText(scope.objColor, ev.layerX, ev.layerY);
+									 TextService.addText(scope.objColor, ev.layerX, ev.layerY, fontControl.val());
 								}
 							}
 						};
@@ -1088,11 +1089,12 @@
 		var objType = activeCanvas.getActiveObject().get('type');
 		console.log(">>TYPE="+objType);
 		if (objType === 'group' || objType === 'i-text') {
+			$(".fillBtn").remove();
 			document.getElementById("draw_color").value = activeCanvas.getActiveObject().get('fill');
 			if (objType === 'i-text') {	document.getElementById("font-control").value = activeCanvas.getActiveObject().get('fontFamily'); }
 		}
-		else if (objType === 'line' || objType === 'path')
-			{document.getElementById("draw_color").value = activeCanvas.getActiveObject().get('stroke');}
+		else if (objType === 'line' || objType === 'path' || objType === 'rect')
+			{document.getElementById("draw_color").value = activeCanvas.getActiveObject().get('stroke'); if (objType === 'line') {$(".fillBtn").remove();}}
 		addDelBtn(e.target.oCoords.tr.x, e.target.oCoords.tr.y);
 		if ((e.target.get('type') === 'path') || (e.target.get('type') === 'rect')) {
 			e.target.setControlsVisibility(HideBoxControls);
