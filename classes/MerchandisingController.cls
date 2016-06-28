@@ -61,7 +61,7 @@ public with sharing class MerchandisingController {
 		Merchandising_Marks__c newBrandMark;
 		Merchandising_Marks__c newCustomerMark;
 
-		List<Merchandising_Marks__c> merchandisingMarksToDelete = [SELECT Id, Name, Arrows__c, Boxes__c, Lines__c, Texts__c, Questions__c, Account__r.Name FROM Merchandising_Marks__c WHERE Account__c =: accId LIMIT 2];
+		List<Merchandising_Marks__c> merchandisingMarksToDelete = [SELECT Id, Name, Cmarks__c, Account__r.Name FROM Merchandising_Marks__c WHERE Account__c =: accId LIMIT 2];
 
 		delete merchandisingMarksToDelete;
 
@@ -76,15 +76,15 @@ public with sharing class MerchandisingController {
 		List<Merchandising_Marks__c> marksToInsert = new List<Merchandising_Marks__c>();
 		if (newBrandMarks != NULL) {
 
-			newBrandMark.Boxes__c = newBrandMarks;
+			newBrandMark.Cmarks__c = newBrandMarks;
 
 			//for (String svgItem : newBrandMarks.split('<svg')) {
 			//	if (svgItem.contains('rect')) {
-			//		if (newBrandMark.Boxes__c == NULL) {
-			//			newBrandMark.Boxes__c = '<svg' + svgItem;
+			//		if (newBrandMark.Cmarks__c == NULL) {
+			//			newBrandMark.Cmarks__c = '<svg' + svgItem;
 			//		}
 			//		else {
-			//			newBrandMark.Boxes__c += '<svg' + svgItem;
+			//			newBrandMark.Cmarks__c += '<svg' + svgItem;
 			//		}
 			//	}
 
@@ -93,15 +93,15 @@ public with sharing class MerchandisingController {
 		}
 		if (newCustomerMarks != NULL) {
 
-			newCustomerMark.Boxes__c = newCustomerMarks;
+			newCustomerMark.Cmarks__c = newCustomerMarks;
 
 			//for (String svgItem : newCustomerMarks.split('<svg')) {
 			//	if (svgItem.contains('rect')) {
-			//		if (newCustomerMark.Boxes__c == NULL) {
-			//			newCustomerMark.Boxes__c = '<svg' + svgItem;
+			//		if (newCustomerMark.Cmarks__c == NULL) {
+			//			newCustomerMark.Cmarks__c = '<svg' + svgItem;
 			//		}
 			//		else {
-			//			newCustomerMark.Boxes__c += '<svg' + svgItem;
+			//			newCustomerMark.Cmarks__c += '<svg' + svgItem;
 			//		}
 			//	}
 			//}
@@ -123,7 +123,7 @@ public with sharing class MerchandisingController {
 	@RemoteAction
 	public static String getMerchandisingMarks(String accId) {
 
-		List<Merchandising_Marks__c> marks = [SELECT Id, Name, Arrows__c, Boxes__c, Lines__c, Texts__c, Questions__c, Account__r.Name FROM Merchandising_Marks__c WHERE Account__c =: accId LIMIT 2];
+		List<Merchandising_Marks__c> marks = [SELECT Id, Name, Cmarks__c, Account__r.Name FROM Merchandising_Marks__c WHERE Account__c =: accId LIMIT 2];
 
 		if (marks.size() == 0) {
 			return NULL;
@@ -149,19 +149,11 @@ public with sharing class MerchandisingController {
 	private class MerchandisingMarksWrapper {
 
 		private String Name { get; private set; }
-		private String Arrows { get; private set; }
-		private String Boxes { get; private set; }
-		private String Lines { get; private set; }
-		private String Texts { get; private set; }
-		private String Questions { get; private set; }
+		private String Cmarks { get; private set; }
 
 		public MerchandisingMarksWrapper(Merchandising_Marks__c merchandisingMarks) {
 			this.Name = merchandisingMarks.Name;
-			this.Arrows = merchandisingMarks.Arrows__c;
-			this.Boxes = merchandisingMarks.Boxes__c;
-			this.Lines = merchandisingMarks.Lines__c;
-			this.Texts = merchandisingMarks.Texts__c;
-			this.Questions = merchandisingMarks.Questions__c;
+			this.Cmarks = merchandisingMarks.Cmarks__c;
 		}
 	}
 }

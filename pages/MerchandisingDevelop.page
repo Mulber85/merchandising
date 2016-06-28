@@ -1,18 +1,21 @@
 <apex:page controller="MerchandisingController" showHeader="false" sidebar="false">
-<apex:includeScript value="{!URLFOR($Resource.raphaelmaster, 'raphael.min.js')}"/>
-<apex:includeScript value="{!URLFOR($Resource.RaphaelExportmaster, 'raphael.export.js')}"/>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.7/angular.min.js"></script>
+<script src="https://code.jquery.com/jquery-1.12.4.min.js"  integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
 <apex:stylesheet value="https://fonts.googleapis.com/css?family=Libre+Baskerville:400,700,400italic"/>
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.0/angular.min.js"></script>
 <apex:includescript value="/soap/ajax/36.0/connection.js" />
 <!-- <link rel="stylesheet" href="path/to/font-awesome/css/font-awesome.min.css"/>
  --><apex:stylesheet value="{!URLFOR($Resource.Spinner, 'css/stylesheets.css')}" />
 <apex:stylesheet value="{!URLFOR($Resource.fontawesome, 'css/font-awesome.min.css')}"/>
 <!-- <apex:stylesheet value="{!URLFOR($Resource.merchandisingIcon, 'img')}" /> -->
-<script src="https://code.jquery.com/jquery-1.12.4.min.js"  integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
 <apex:includeScript value="{!URLFOR($Resource.fabricjsmaster, '/dist/fabric.js')}"/>
 <apex:includeScript value="{!URLFOR($Resource.rounding, 'rounding.js')}"/>
-<apex:includeScript value="{!URLFOR($Resource.FileSaver, 'FileSaver.js')}"/>
+<apex:includeScript value="{!URLFOR($Resource.fileSaver, 'fileSaver.js')}"/>
 <apex:includeScript value="{!URLFOR($Resource.canvasToBlob, 'canvasToBlob.js')}"/>
+<apex:includeScript value="{!URLFOR($Resource.sweetalert, 'dist/sweetalert.min.js')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.sweetalert, 'dist/sweetalert.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.sweetalert, 'themes/twitter/twitter.css')}"/>
+<apex:includeScript value="{!URLFOR($Resource.humanejs, 'humane.min.js')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.humanejs, 'themes/boldlight.css')}"/>
 
 <style>
 
@@ -97,10 +100,17 @@
 	#draw_color:hover {
 		cursor: pointer;
 	}
-	#customImageView {
+	#customerImageView {
 		font: 15pt bold; color: #bbb; z-index: 50;
 	}
-	#customImageView:hover {
+	#customerImageView:hover {
+		color: #000;
+		cursor: pointer;
+	}
+	#brandImageView {
+		font: 15pt bold; color: #bbb; z-index: 50;
+	}
+	#brandImageView:hover {
 		color: #000;
 		cursor: pointer;
 	}
@@ -115,10 +125,16 @@
 	.Icon:focus {
 		background-color: #bbb;
 	}
+	.disabledbutton {
+	    pointer-events: none;
+	    opacity: 0.4;
+	}
 </style>
 
 	<body ng-app="MerchandisingApp">
 		<div class="app" ng-controller="MerchandisingCtrl" id="MerchandisingCtrl">
+			{{dropzone}}
+			{{cdropzone}}
 
 			<div class="sk-double-bounce" ng-show="Loading">
 				<div class="sk-child sk-double-bounce1"></div>
@@ -135,7 +151,7 @@
 				<div id="leftSidebar" style="position: fixed; z-index: 20; left: 0px; top: 0px; min-width: 280px; height: 100%; -webkit-box-shadow: 11px 0px 24px -7px rgba(0,0,0,0.75);
 				-moz-box-shadow: 11px 0px 24px -7px rgba(0,0,0,0.75); box-shadow: 11px 0px 24px -7px rgba(0,0,0,0.75); background-color: #fff">
 					<div style="font: 30pt bold; color: #000; text-align: center; ">Add Elements:</div>
-					<div id="arrow" class="Icon" style="margin-top: 10%; height: 140px;" tabindex="0" merch-draggable="draggable" ng-focus="focusHandler($event)">
+					<div id="arrow" class="Icon" style="margin-top: 10%; height: 140px;" tabindex="0" merch-draggable="draggable" ng-focus="focusHandler($event)" ng-blind="alert('arrow')">
 						<img id="arrow" width="150" height="30" src="{!URLFOR($Resource.merchandisingIcon, 'img/arrow.png')}"></img>
 					</div>
 					<div id="box" ng-focus="focusHandler($event)" class="Icon" tabindex="0" style="height: 140px;" merch-draggable="draggable">
@@ -170,11 +186,11 @@
 							<div ng-if="upsertCustomerImage">
 
 								<span style="font: 15pt bold; color: #bbb; ">Drop Customer Image Here</span>
-								<input type="file" file-dropzone="[image/png, image/jpeg, image/gif]" file-name="ImageFileName.customName" file-type="ImageFileType.customType" fileread="image.customImage"/>
+								<input type="file" file-dropzone="[image/png, image/jpeg, image/gif]" file-name="ImageFileName.customName" file-type="ImageFileType.customType" fileread="image.customImage" id="customerImageFile"/>
 								<img id="Img" ng-src='{{image.customImage}}'/>
 							</div>
 							<div ng-show="!upsertCustomerImage">
-								<span id="customImageView" ng-click="upsertCustomerImage = true">Customer Image</span><span class="icon-loop2" ng-click="upsertCustomerImage = true"><i class="fa fa-cloud-upload " aria-hidden="true" ng-click="upsertCustomerImage = true"></i></span>
+								<span id="customerImageView" ng-click="upsertCustomerImage = true">Customer Image</span><span class="icon-loop2" ng-click="upsertCustomerImage = true"><i class="fa fa-cloud-upload " aria-hidden="true" ng-click="upsertCustomerImage = true" id="customerCloud"></i></span>
 								<div id="MerchandisingCustomerMarkContainer" style="width:500px; height: 500px; top: 23.5px; position: absolute;" merch-droppable="droppable">
 									<canvas id="Customer" class="Customer" width= "500px" height= "500px" style="position: absolute; z-index: 25; width: 500px; height: 500px; left: 0px; top: 0px; -webkit-user-select: none; cursor: default;" onclick="mouseclickHandler(this)"></canvas>
 								</div>
@@ -185,11 +201,11 @@
 						<div id="BrandImgContainer" style="width: 550px; height: 550px; margin-left: 10%; display: inline; float: left;">
 							<div ng-if="upsertBrandImage">
 								<span style="font: 15pt bold; color: #bbb;">Drop Brand Image Here</span>
-								<input type="file" file-dropzone="[image/png, image/jpeg, image/gif]" file-name="ImageFileName.brandName" file-type="ImageFileType.brandType" fileread="image.brandImage"/>
+								<input type="file" file-dropzone="[image/png, image/jpeg, image/gif]" file-name="ImageFileName.brandName" file-type="ImageFileType.brandType" fileread="image.brandImage" id="brandImageFile"/>
 								<img id="Img" ng-src='{{image.brandImage}}' />
 							</div>
 							<div ng-show="!upsertBrandImage">
-								<span  id="customImageView" ng-click="upsertBrandImage = true">Brand Image</span><span class="icon-loop2" ng-click="upsertBrandImage = true"><i class="fa fa-cloud-upload" ng-click="upsertBrandImage = true" aria-hidden="true"></i></span>
+								<span  id="brandImageView" ng-click="upsertBrandImage = true">Brand Image</span><span class="icon-loop2" ng-click="upsertBrandImage = true"><i class="fa fa-cloud-upload" ng-click="upsertBrandImage = true" aria-hidden="true" id="brandCloud"></i></span>
 								<div id="MerchandisingBrandMarkContainer" style="width:500px; height: 500px; top: 23.5px; position: absolute;" merch-droppable="droppable">
 									<canvas id="Brand" class="Brand" width= "500px" height= "500px" style="position: absolute; z-index: 25; width: 500px; height: 500px; left: 0px; top: 0px; -webkit-user-select: none; cursor: default;"></canvas>
 								</div>
@@ -203,11 +219,32 @@
 	</body>
 
 	<script type="text/javascript">
+		var dropzone = true;
+		var cdropzone = true;
 		var app = angular.module("MerchandisingApp", []);
 
 	(function() {
 		'use strict';
 		sforce.connection.sessionId = '{!GETSESSIONID()}';
+		var profileId = sforce.connection.getUserInfo().profileId;
+		var profileName = sforce.connection.query("select NAME from PROFILE where ID = '" + profileId + "' LIMIT 1").getArray("records");
+		console.log('user profile: ' + profileName[0].Name);
+		//# Customer Image can be uploaded by Sales Rep or by System Administrator and they can draw.
+		console.log(['System Administrator', 'Sales Rep'].indexOf(profileName[0].Name));
+		if (['System Administrator', 'Sales Rep'].indexOf(profileName[0].Name) === -1) {
+			document.getElementById('customerImageView').style.visibility = 'hidden';
+			document.getElementById('customerCloud').style.visibility = 'hidden';
+			document.getElementById('customerImageFile').disabled = true;
+			cdropzone = false;
+			$("#leftSidebar").addClass("disabledbutton");
+		}
+		//# Brand Image can be uploaded by System Administrator only. Rep shouldn't see the upload button.
+		if (profileName[0].Name !== 'System Administrator') {
+			document.getElementById('brandImageView').style.visibility = 'hidden';
+			document.getElementById('brandCloud').style.visibility = 'hidden';
+			document.getElementById('brandImageFile').disabled = true;
+			dropzone = false;
+		}
 	})();
 
     app.config(['$httpProvider',function ($httpProvider) {
@@ -228,6 +265,9 @@
 		return {
 			getAttachments : function(accId, newFirstImg, newSecondImg) {
 				var deferred = $q.defer();
+				// console.log(accId);
+				// console.log(newFirstImg);
+				// console.log(newSecondImg);
 
 				Visualforce.remoting.Manager.invokeAction(
 					'{!$RemoteAction.MerchandisingController.getAttachment}',
@@ -249,7 +289,7 @@
 							        binary += String.fromCharCode( bytes[ i ] );
 							    }
 							    var base64 = 'data:image/png;base64,' + window.btoa( binary );
-							    console.log(base64);
+							    // console.log(base64); // image data
 				                imgToLoad(base64);
 				            }).error(function(err, status, response, headers) {
 				            	console.log(headers);
@@ -320,6 +360,12 @@
 		$scope.canvas;
 		$scope.upsertMarks = false;
 
+		if (cdropzone) {
+			$('#arrow').focus();
+			FocusService.focusCanvas('arrow', [1, 0, 0, 0, 0], 'arrow');
+			$scope.elemArray = [1, 0, 0, 0, 0];
+		} else { humane.clickToClose = true; humane.timeout = 5000; humane.log("Only the System Administrator or Sales Rep can draw on Customer image"); }
+
 		vm.controls = [
 			{
 				type: "arrow"
@@ -364,19 +410,16 @@
 
  		dataManager.getMerchandisingMarks($scope.accId).then(function(merchandisingMarksWrapper) {
 			$scope.merchandisingMarksWrapper = JSON.parse(merchandisingMarksWrapper);
-			// var merchandisingBrandMarkContainer = document.getElementById('MerchandisingBrandMarkContainer');
-			// var merchandisingCustomerMarkContainer = document.getElementById('MerchandisingCustomerMarkContainer');
-			// LoadCanvasService.loadCanvas(merchandisingMarksWrapper[i].Boxes);
 			if ($scope.merchandisingMarksWrapper === null || $scope.merchandisingMarksWrapper.length === 0) {
 				$scope.Loading = false;
 				return;
 			}
 			for (var i = 0; i < $scope.merchandisingMarksWrapper.length; i++) {
 				if ($scope.merchandisingMarksWrapper[i].Name.indexOf('Custom') > -1) {
-					LoadCanvasService.loadCanvas('Custom', $scope.merchandisingMarksWrapper[i].Boxes);
+					LoadCanvasService.loadCanvas('Custom', $scope.merchandisingMarksWrapper[i].Cmarks);
 				}
 				else if ($scope.merchandisingMarksWrapper[i].Name.indexOf('Brand') > -1) {
-					LoadCanvasService.loadCanvas('Brand', $scope.merchandisingMarksWrapper[i].Boxes);
+					LoadCanvasService.loadCanvas('Brand', $scope.merchandisingMarksWrapper[i].Cmarks);
 				}
 			}
 
@@ -405,7 +448,7 @@
 			$scope.Loading = true;
 			var deferred = $q.defer();
 			var attachments = [];
-			if ($scope.image.customImage != '') {
+			if ($scope.image.customImage !== '') {
 				var attachment = new sforce.SObject("Attachment");
 						attachment.Name = 'Customer.' + $scope.ImageFileName.customName.split('.')[1];
 						attachment.ContentType = $scope.ImageFileType.customType;
@@ -413,7 +456,7 @@
 						attachment.Body = $scope.image.customImage.split(',')[1];
 				attachments.push(attachment);
 			}
-			if ($scope.image.brandImage != '') {
+			if ($scope.image.brandImage !=='') {
 				var attachment = new sforce.SObject("Attachment");
 						attachment.Name = 'Brand.' + $scope.ImageFileName.brandName.split('.')[1];
 						attachment.ContentType = $scope.ImageFileType.brandType;
@@ -421,13 +464,13 @@
 						attachment.Body = $scope.image.brandImage.split(',')[1];
 				attachments.push(attachment);
 			}
-			if ($scope.image.customImage == '' && $scope.image.brandImage == '') {
+			if ($scope.image.customImage === '' && $scope.image.brandImage === '') {
 				// alert("Please choose some image.");
 
 						var merchandisingCustomerMarkContainer = SaveCanvasService.saveCanvas('Customer');
 						var merchandisingBrandMarkContainer = SaveCanvasService.saveCanvas('Brand');
-						console.log(merchandisingBrandMarkContainer);
-						console.log(merchandisingCustomerMarkContainer);
+						//console.log(merchandisingBrandMarkContainer);
+						//console.log(merchandisingCustomerMarkContainer);
 
 						dataManager.saveMerchandisingMarks($scope.accId, merchandisingBrandMarkContainer, merchandisingCustomerMarkContainer);
 				$scope.Loading = false;
@@ -494,16 +537,74 @@
 		}
 
 		$scope.focusHandler = function focusHandler(ev) {
-			console.log('> handler element id: ' + ev.srcElement.id);
+			//console.log('> handler element id: ' + ev.srcElement.id);
+			var toDo = false;
+			ev.stopPropagation();
+        	ev.preventDefault();
 			ev = (ev) ? ev : ((window.event) ? window.event : null);
 			if(ev) {
 				var getID = (ev.target) ? ev.target : event.srcElement;
 				console.log('> getID: ' + getID.id);
-				FocusService.focusCanvas(getID.id);
+				$('#'+getID.id).focus();
+				switch (getID.id) {
+					case 'arrow':
+						if ($scope.elemArray[0] === 0) { toDo = true; $scope.elemArray = [1, 0, 0, 0, 0]; }
+						break;
+					case 'box':
+						if ($scope.elemArray[1] === 0) { toDo = true; $scope.elemArray = [0, 1, 0, 0, 0]; }
+						break;
+					case 'line':
+						if ($scope.elemArray[2] === 0) { toDo = true; $scope.elemArray = [0, 0, 1, 0, 0]; }
+						break;
+					case 'text':
+						if ($scope.elemArray[3] === 0) { toDo = true; $scope.elemArray = [0, 0, 0, 1, 0]; }
+						break;
+					case 'question':
+						if ($scope.elemArray[4] === 0) { toDo = true; $scope.elemArray = [0, 0, 0, 0, 1]; }
+						break;
+				}
+				console.log($scope.elemArray + ' ' + toDo);
+				if (toDo) { console.log(ev); FocusService.focusCanvas(getID.id, $scope.elemArray); }
+/*				ev.stopPropagation();
+    			ev.preventDefault();
+    			ev.cancelBubble = true;
+    			ev.returnValue = false;*/
 			}
-			ev = null;
 		}
 
+	});
+
+	 app.factory('focus', function($timeout, $window) {
+	    return function(id) {
+	      $timeout(function() {
+	        var element = $window.document.getElementById(id);
+	        if(element)
+	          element.focus();
+	      });
+	    };
+	  });
+
+	  app.directive('eventFocus', function(focus) {
+	    return function(scope, elem, attr) {
+	      elem.on(attr.eventFocus, function() {
+	        focus(attr.eventFocusId);
+	      });
+
+	      scope.$on('$destroy', function() {
+	        elem.off(attr.eventFocus);
+	      });
+	    };
+	  });
+
+	app.directive('stopPropagation', function () {
+		return {
+			restrict: 'A',
+			link: function (scope, element) {
+				element.bind('click', function (e) {
+					return false;
+				});
+			}
+		};
 	});
 
 	app.directive("fileread", [function () {
@@ -579,6 +680,11 @@
 					if (event != null) {
 						event.preventDefault();
 					}
+					if ((event.target.id === "brandImageFile") && (!dropzone)) {
+						swal({ title: "Error", text: "Only the System Administrator can upload this image!", type: "error", showConfirmButton: true, confirmButtonText: "OK" });
+					} else if ((event.target.id === "customerImageFile") && (!cdropzone)) {
+						swal({ title: "Error", text: "Only the System Administrator or Sales Rep can upload this image!", type: "error", showConfirmButton: true, confirmButtonText: "OK" });
+					} else {
 					reader = new FileReader();
 					reader.onload = function(evt) {
 						if (checkSize(size) && isTypeValid(type)) {
@@ -597,11 +703,24 @@
 					name = file.name;
 					type = file.type;
 					reader.readAsDataURL(file);
-					return true;
+					return true; }
 				});
 			}
 		}
 	}]);
+
+    app.directive('stopEvent', function () {
+        return {
+            restrict: 'A',
+            link: function (scope, element, attr) {
+                if(attr && attr.stopEvent)
+                    element.bind(attr.stopEvent, function (e) {
+                        e.stopPropagation();
+                    });
+            }
+        };
+     });
+
 	//drag'n'drop
 			app.directive('merchDraggable', function(dragHandler) {
 				return {
@@ -986,11 +1105,29 @@
         var pointer = activeCanvas.getPointer(o.e);
         origY = pointer.y;
         console.log(">> del Y="+origY);
-	    if(activeCanvas.getActiveObject() && (origY > 30))
+	    if(activeCanvas.getActiveObject())
 	    {
+	    	var del_type = activeCanvas.getActiveObject().get('type');
 	        activeCanvas.remove(activeCanvas.getActiveObject());
 	        $(".fillBtn").remove();
 	        $(".delBtn").remove();
+			switch (del_type) {
+				case 'group':
+					$('#arrow').focus();
+					break
+				case 'path':
+					$('#box').focus();
+					break
+				case 'line':
+					$('#line').focus();
+					break
+				case 'i-text':
+					$('#text').focus();
+					break
+				case 'rect':
+					$('#box').focus();
+					break
+			}
 	    }
 	});
 
@@ -1058,7 +1195,7 @@
 					break
 				case 'rect':
 					var isFill = activeCanvas.getActiveObject().get('fill');
-					if (isFill !== false) { activeCanvas.getActiveObject().setFill(document.getElementById("draw_color").value); }
+					if ((isFill !== false) && (isFill !== 'transparent')) { activeCanvas.getActiveObject().setFill(document.getElementById("draw_color").value); }
 					activeCanvas.getActiveObject().set({stroke: document.getElementById("draw_color").value});
 					break
 			}
@@ -1512,7 +1649,7 @@
 
 				return service;
 
-				function focusCanvas(objType) {
+				function focusCanvas(objType, elemArray) {
 					// if (selectedCanvas.indexOf('Brand') > -1) {
 					// 	activeCanvas = brand;
 					// }
@@ -1525,6 +1662,11 @@
 						activeCanvas.selection = false;
 
 						activeCanvas.on('mouse:down', function(o){
+							var act = document.activeElement.id;
+							console.log(o.e);
+							console.log('act: ' + act);
+							o.e.preventDefault();
+							o.e.stopPropagation();
 							isDown = true;
 							var pointer = activeCanvas.getPointer(o.e);
 							origXX = pointer.x;
@@ -1536,21 +1678,32 @@
 				            	{
 				                	$(".fillBtn").remove();
 				                	$(".delBtn").remove();
+				                	console.log(elemArray);
 									switch (objType) {
 										case 'arrow':
-											arrow = addArrow(document.getElementById("draw_color").value, origXX, origYY, origXX, origYY);
+											if ((elemArray[0] === 1) && (act === 'arrow')) {
+												arrow = addArrow(document.getElementById("draw_color").value, origXX, origYY, origXX, origYY);
+											}
 											break;
 										case 'box':
-											box = addBox(document.getElementById("draw_color").value, origXX, origYY, 0, 0);
+											if ((elemArray[1] === 1) && (act === 'box')) {
+												box = addBox(document.getElementById("draw_color").value, origXX, origYY, 0, 0);
+											}
 											break;
 										case 'line':
-											line = addLine(document.getElementById("draw_color").value, origXX, origYY);
+											if ((elemArray[2] === 1) && (act === 'line')) {
+												line = addLine(document.getElementById("draw_color").value, origXX, origYY);
+											}
 											break;
 										case 'text':
-											text = addText(document.getElementById("draw_color").value, origXX, origYY, fontControl.val());
+											if ((elemArray[3] === 1) && (act === 'text')) {
+												text = addText(document.getElementById("draw_color").value, origXX, origYY, fontControl.val());
+											}
 											break;
 										case 'question':
-											question = addText(document.getElementById("draw_color").value, origXX, origYY, fontControl.val());
+											if ((elemArray[4] === 1) && (act === 'question')) {
+												question = addText(document.getElementById("draw_color").value, origXX, origYY, fontControl.val());
+											}
 										break;
 									}
 							}
@@ -1565,31 +1718,41 @@
 
 							var pointer = activeCanvas.getPointer(o.e);
 							if(!activeCanvas.getActiveObject()) {
+								var act = document.activeElement.id;
 								switch (objType) {
 									case 'arrow':
-										arrow.Line.set({x1:pointer.x, y1:pointer.y});
+										if ((elemArray[0] === 1) && (act === 'arrow')) {
+											arrow.Line.set({x1:pointer.x, y1:pointer.y});
 
-										var curAngle = arrow.Triangle.getAngle();
-										var dy = pointer.y - origYY;
-										var dx = pointer.x - origXX;
-					    				var theta = Math.atan2(dy, dx); // range (-PI, PI]
-										theta *= 180 / Math.PI; // rads to degs, range (-180, 180]
-										if (theta < 0) theta = 360 + theta; // range [0, 360)
-					    				arrow.Triangle.setAngle(theta -	 90);
+											var curAngle = arrow.Triangle.getAngle();
+											var dy = pointer.y - origYY;
+											var dx = pointer.x - origXX;
+						    				var theta = Math.atan2(dy, dx); // range (-PI, PI]
+											theta *= 180 / Math.PI; // rads to degs, range (-180, 180]
+											if (theta < 0) theta = 360 + theta; // range [0, 360)
+						    				arrow.Triangle.setAngle(theta -	 90);
+						    			}
 										break;
 									case 'box':
-										box.set('width', pointer.x - origXX);
-					                    box.set('height', pointer.y - origYY);
+										if ((elemArray[1] === 1) && (act === 'box')) {
+											box.set('width', pointer.x - origXX);
+						                    box.set('height', pointer.y - origYY);
+						                }
 										break;
 									case 'line':
-										line.set({x2: pointer.x, y2: pointer.y });
+										if ((elemArray[2] === 1) && (act === 'line')) {
+											line.set({x2: pointer.x, y2: pointer.y });
+										}
 										break;
 									case 'text':
-										text.set('fontSize', pointer.x - origXX);
-					                    // text.set('height', pointer.y - origY)
+										if ((elemArray[3] === 1) && (act === 'text')) {
+											text.set('fontSize', pointer.x - origXX);
+										}
 										break;
 									case 'question':
-										question(document.getElementById("draw_color").value, 340, 0, fontControl.val());
+										if ((elemArray[4] === 1) && (act === 'question')) {
+											question(document.getElementById("draw_color").value, 340, 0, fontControl.val());
+										}
 										break;
 								}
 	  							activeCanvas.renderAll();
@@ -1598,38 +1761,50 @@
 
 						activeCanvas.on('mouse:up', function(o){
 							isDown = false;
+							o.e.preventDefault();
+							o.e.stopPropagation();
  					        var pointer = activeCanvas.getPointer(o.e);
  					        if(!activeCanvas.getActiveObject()) {
+								var act = document.activeElement.id;
 								switch (objType) {
 									case 'arrow':
-										if ((Math.abs(pointer.x - origXX) > 10) || (Math.abs(pointer.y - origYY) > 10)) {
-											var group = new fabric.Group([arrow.Triangle, arrow.Line]);
-											//setLineControls(grp);
-											activeCanvas.add(group);
+										if ((elemArray[0] === 1) && (act === 'arrow')) {
+											if ((Math.abs(pointer.x - origXX) > 10) || (Math.abs(pointer.y - origYY) > 10)) {
+												var group = new fabric.Group([arrow.Triangle, arrow.Line]);
+												//setLineControls(grp);
+												activeCanvas.add(group);
+											}
+											activeCanvas.remove(arrow.Triangle);
+											activeCanvas.remove(arrow.Line);
 										}
-										activeCanvas.remove(arrow.Triangle);
-										activeCanvas.remove(arrow.Line);
 										break
 										//activeCanvas.setActiveObject(grp);
 									case 'box':
-										if ((Math.abs(pointer.x - origXX) <= 10) && (Math.abs(pointer.y - origYY) <= 10)) {
-											activeCanvas.remove(box);
-										} else box.setCoords();
+										if ((elemArray[1] === 1) && (act === 'box')) {
+											if ((Math.abs(pointer.x - origXX) <= 10) && (Math.abs(pointer.y - origYY) <= 10)) {
+												activeCanvas.remove(box);
+											} else box.setCoords();
+										}
 										break
 									case 'line':
-										if ((Math.abs(pointer.x - origXX) <= 10) && (Math.abs(pointer.y - origYY) <= 10)) {
-											activeCanvas.remove(line);
-										} else line.setCoords();
+										if ((elemArray[2] === 1) && (act === 'line')) {
+											if ((Math.abs(pointer.x - origXX) <= 10) && (Math.abs(pointer.y - origYY) <= 10)) {
+												activeCanvas.remove(line);
+											} else line.setCoords();
+										}
 										break
 									case 'text':
-										if (Math.abs(pointer.x - origXX) <= 20) {
-											activeCanvas.remove(text);
-										} else text.setCoords();
+										if ((elemArray[3] === 1) && (act === 'text')) {
+											if (Math.abs(pointer.x - origXX) <= 20) {
+												activeCanvas.remove(text);
+											} else text.setCoords();
+										}
 										break
 									}
 								activeCanvas.renderAll();
-								//activeCanvas.off('mouse:move');
-								//activeCanvas.off('mouse:down');
+								// activeCanvas.off('mouse:move');
+								// activeCanvas.off('mouse:down');
+								//$('#'+objType).focus();
 							}
 						});
 				}

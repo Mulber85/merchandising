@@ -44,7 +44,6 @@
         <actionName>View</actionName>
         <type>Default</type>
     </actionOverrides>
-    <allowInChatterGroups>false</allowInChatterGroups>
     <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
     <deploymentStatus>Deployed</deploymentStatus>
     <enableActivities>false</enableActivities>
@@ -52,7 +51,6 @@
     <enableFeeds>false</enableFeeds>
     <enableHistory>false</enableHistory>
     <enableReports>false</enableReports>
-    <enableSearch>false</enableSearch>
     <enableSharing>true</enableSharing>
     <enableStreamingApi>true</enableStreamingApi>
     <fields>
@@ -67,45 +65,9 @@
         <type>Lookup</type>
     </fields>
     <fields>
-        <fullName>Arrows__c</fullName>
+        <fullName>Cmarks__c</fullName>
         <externalId>false</externalId>
-        <label>Arrows</label>
-        <length>32000</length>
-        <trackTrending>false</trackTrending>
-        <type>LongTextArea</type>
-        <visibleLines>3</visibleLines>
-    </fields>
-    <fields>
-        <fullName>Boxes__c</fullName>
-        <externalId>false</externalId>
-        <label>Boxes</label>
-        <length>32000</length>
-        <trackTrending>false</trackTrending>
-        <type>LongTextArea</type>
-        <visibleLines>3</visibleLines>
-    </fields>
-    <fields>
-        <fullName>Lines__c</fullName>
-        <externalId>false</externalId>
-        <label>Lines</label>
-        <length>32000</length>
-        <trackTrending>false</trackTrending>
-        <type>LongTextArea</type>
-        <visibleLines>3</visibleLines>
-    </fields>
-    <fields>
-        <fullName>Questions__c</fullName>
-        <externalId>false</externalId>
-        <label>Questions</label>
-        <length>32000</length>
-        <trackTrending>false</trackTrending>
-        <type>LongTextArea</type>
-        <visibleLines>3</visibleLines>
-    </fields>
-    <fields>
-        <fullName>Texts__c</fullName>
-        <externalId>false</externalId>
-        <label>LinesTexts</label>
+        <label>Cmarks</label>
         <length>32000</length>
         <trackTrending>false</trackTrending>
         <type>LongTextArea</type>
