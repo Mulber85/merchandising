@@ -24,16 +24,46 @@
 	}
 
 	#Img {
-		width: 500px;
-		height: 500px;
+	overflow: hidden;
+	padding-left: 0px;
+	padding-bottom: 0px;
+	width: 800px;
 	}
 
+	#Img img {
+	max-width: 800px;
+	width:expression(this.width > 800 ? "800px" : this.width);
+	}
+
+	#ImgB {
+	overflow: hidden;
+	padding-left: 0px;
+	padding-bottom: 0px;
+	width: 500px;
+	}
+
+	#ImgB img {
+	max-width: 500px;
+	width:expression(this.width > 500 ? "500px" : this.width);
+	}
 
 	button {
 		cursor: pointer;
 	}
 
-	input[type=file] {
+	#customerImageFile {
+		width: 750px;
+		height: 450px;
+		border: 2px dashed #bbb;
+		border-radius: 5px;
+		padding: 25px;
+		text-align: center;
+		font: 15pt bold;
+		color: #bbb;
+		margin-bottom: 20px;
+	}
+
+	#brandImageFile {
 		width: 450px;
 		height: 450px;
 		border: 2px dashed #bbb;
@@ -151,7 +181,7 @@
 				<div id="leftSidebar" style="position: fixed; z-index: 20; left: 0px; top: 0px; min-width: 280px; height: 100%; -webkit-box-shadow: 11px 0px 24px -7px rgba(0,0,0,0.75);
 				-moz-box-shadow: 11px 0px 24px -7px rgba(0,0,0,0.75); box-shadow: 11px 0px 24px -7px rgba(0,0,0,0.75); background-color: #fff">
 					<div style="font: 30pt bold; color: #000; text-align: center; ">Add Elements:</div>
-					<div id="arrow" class="Icon" style="margin-top: 10%; height: 140px;" tabindex="0" merch-draggable="draggable" ng-focus="focusHandler($event)" ng-blind="alert('arrow')">
+					<div id="arrow" class="Icon" style="margin-top: 10%; height: 140px;" tabindex="0" merch-draggable="draggable" ng-focus="focusHandler($event)">
 						<img id="arrow" width="150" height="30" src="{!URLFOR($Resource.merchandisingIcon, 'img/arrow.png')}"></img>
 					</div>
 					<div id="box" ng-focus="focusHandler($event)" class="Icon" tabindex="0" style="height: 140px;" merch-draggable="draggable">
@@ -180,9 +210,9 @@
 		                </select>
 					</div>
 				</div>
-				<div style="position: absolute; z-index: 0; left: 25%; top: 18%; width: 1400px; height: 600px;">
+				<div style="position: absolute; z-index: 0; left: 17%; top: 18%; width: 1700px; height: 600px;">
 					<form enctype="multipart/form-data" method="post">
-						<div id="CustomerImgContainer" style="width: 550px; height: 550px; display: inline; float: left;">
+						<div id="CustomerImgContainer" style="width: 850px; height: 550px; display: inline; float: left;">
 							<div ng-if="upsertCustomerImage">
 
 								<span style="font: 15pt bold; color: #bbb; ">Drop Customer Image Here</span>
@@ -191,25 +221,25 @@
 							</div>
 							<div ng-show="!upsertCustomerImage">
 								<span id="customerImageView" ng-click="upsertCustomerImage = true">Customer Image</span><span class="icon-loop2" ng-click="upsertCustomerImage = true"><i class="fa fa-cloud-upload " aria-hidden="true" ng-click="upsertCustomerImage = true" id="customerCloud"></i></span>
-								<div id="MerchandisingCustomerMarkContainer" style="width:500px; height: 500px; top: 23.5px; position: absolute;" merch-droppable="droppable">
-									<canvas id="Customer" class="Customer" width= "500px" height= "500px" style="position: absolute; z-index: 25; width: 500px; height: 500px; left: 0px; top: 0px; -webkit-user-select: none; cursor: default;" onclick="mouseclickHandler(this)"></canvas>
+								<div id="MerchandisingCustomerMarkContainer" style="width:800px; height: 500px; top: 23.5px; position: absolute;" merch-droppable="droppable">
+									<canvas id="Customer" class="Customer" width= "800px" height= "500px" style="position: absolute; z-index: 25; width: 800px; height: 500px; left: 0px; top: 0px; -webkit-user-select: none; cursor: default;" onclick="mouseclickHandler(this)"></canvas>
 								</div>
 								<img id="Img" src="{{attachments.customImageURL}}"></img>
 							</div>
 						</div>
 
-						<div id="BrandImgContainer" style="width: 550px; height: 550px; margin-left: 10%; display: inline; float: left;">
+						<div id="BrandImgContainer" style="width: 550px; height: 550px; margin-left: 5%; display: inline; float: left;">
 							<div ng-if="upsertBrandImage">
 								<span style="font: 15pt bold; color: #bbb;">Drop Brand Image Here</span>
 								<input type="file" file-dropzone="[image/png, image/jpeg, image/gif]" file-name="ImageFileName.brandName" file-type="ImageFileType.brandType" fileread="image.brandImage" id="brandImageFile"/>
-								<img id="Img" ng-src='{{image.brandImage}}' />
+								<img id="ImgB" ng-src='{{image.brandImage}}' />
 							</div>
 							<div ng-show="!upsertBrandImage">
 								<span  id="brandImageView" ng-click="upsertBrandImage = true">Brand Image</span><span class="icon-loop2" ng-click="upsertBrandImage = true"><i class="fa fa-cloud-upload" ng-click="upsertBrandImage = true" aria-hidden="true" id="brandCloud"></i></span>
 								<div id="MerchandisingBrandMarkContainer" style="width:500px; height: 500px; top: 23.5px; position: absolute;" merch-droppable="droppable">
 									<canvas id="Brand" class="Brand" width= "500px" height= "500px" style="position: absolute; z-index: 25; width: 500px; height: 500px; left: 0px; top: 0px; -webkit-user-select: none; cursor: default;"></canvas>
 								</div>
-								<img id="Img" src="{{attachments.brandImageURL}}"></img>
+								<img id="ImgB" src="{{attachments.brandImageURL}}"></img>
 							</div>
 						</div>
 					</form>
@@ -456,7 +486,7 @@
 						attachment.Body = $scope.image.customImage.split(',')[1];
 				attachments.push(attachment);
 			}
-			if ($scope.image.brandImage !=='') {
+			if ($scope.image.brandImage !== '') {
 				var attachment = new sforce.SObject("Attachment");
 						attachment.Name = 'Brand.' + $scope.ImageFileName.brandName.split('.')[1];
 						attachment.ContentType = $scope.ImageFileType.brandType;
@@ -546,6 +576,7 @@
 				var getID = (ev.target) ? ev.target : event.srcElement;
 				console.log('> getID: ' + getID.id);
 				$('#'+getID.id).focus();
+				// delete $scope.focusHandler;
 				switch (getID.id) {
 					case 'arrow':
 						if ($scope.elemArray[0] === 0) { toDo = true; $scope.elemArray = [1, 0, 0, 0, 0]; }
@@ -565,13 +596,8 @@
 				}
 				console.log($scope.elemArray + ' ' + toDo);
 				if (toDo) { console.log(ev); FocusService.focusCanvas(getID.id, $scope.elemArray); }
-/*				ev.stopPropagation();
-    			ev.preventDefault();
-    			ev.cancelBubble = true;
-    			ev.returnValue = false;*/
 			}
 		}
-
 	});
 
 	 app.factory('focus', function($timeout, $window) {
@@ -981,9 +1007,11 @@
 	      oImg.setTop(0);
 	      oImg.set('selectable', false);
 	      oImg.hoverCursor = 'default';
+          var ih = oImg.height;
+		  var iw = oImg.width;
 	      customer.setBackgroundImage(oImg);
 		  customer.backgroundImage.width = customer.getWidth();
-		  customer.backgroundImage.height = customer.getHeight();
+		  customer.backgroundImage.height = Math.round(ih * customer.getWidth() / iw);
 	      customer.renderAll();
 	      // customer.add(oImg);
 	      // customer.sendToBack(oImg);

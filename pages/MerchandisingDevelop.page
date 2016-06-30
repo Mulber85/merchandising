@@ -16,6 +16,8 @@
 <apex:stylesheet value="{!URLFOR($Resource.sweetalert, 'themes/twitter/twitter.css')}"/>
 <apex:includeScript value="{!URLFOR($Resource.humanejs, 'humane.min.js')}"/>
 <apex:stylesheet value="{!URLFOR($Resource.humanejs, 'themes/boldlight.css')}"/>
+<apex:includeScript value="{!URLFOR($Resource.linkedselect, 'linkedselect.js')}"/>
+<apex:includeScript value="{!URLFOR($Resource.listBox, 'listBox.js')}"/>
 
 <style>
 
@@ -24,16 +26,46 @@
 	}
 
 	#Img {
-		width: 500px;
-		height: 500px;
+	overflow: hidden;
+	padding-left: 0px;
+	padding-bottom: 0px;
+	width: 800px;
 	}
 
+	#Img img {
+	max-width: 800px;
+	width:expression(this.width > 800 ? "800px" : this.width);
+	}
+
+	#ImgB {
+	overflow: hidden;
+	padding-left: 0px;
+	padding-bottom: 0px;
+	width: 500px;
+	}
+
+	#ImgB img {
+	max-width: 500px;
+	width:expression(this.width > 500 ? "500px" : this.width);
+	}
 
 	button {
 		cursor: pointer;
 	}
 
-	input[type=file] {
+	#customerImageFile {
+		width: 750px;
+		height: 450px;
+		border: 2px dashed #bbb;
+		border-radius: 5px;
+		padding: 25px;
+		text-align: center;
+		font: 15pt bold;
+		color: #bbb;
+		margin-bottom: 20px;
+	}
+
+	#brandImageFile {
 		width: 450px;
 		height: 450px;
 		border: 2px dashed #bbb;
@@ -151,7 +183,7 @@
 				<div id="leftSidebar" style="position: fixed; z-index: 20; left: 0px; top: 0px; min-width: 280px; height: 100%; -webkit-box-shadow: 11px 0px 24px -7px rgba(0,0,0,0.75);
 				-moz-box-shadow: 11px 0px 24px -7px rgba(0,0,0,0.75); box-shadow: 11px 0px 24px -7px rgba(0,0,0,0.75); background-color: #fff">
 					<div style="font: 30pt bold; color: #000; text-align: center; ">Add Elements:</div>
-					<div id="arrow" class="Icon" style="margin-top: 10%; height: 140px;" tabindex="0" merch-draggable="draggable" ng-focus="focusHandler($event)" ng-blind="alert('arrow')">
+					<div id="arrow" class="Icon" style="margin-top: 10%; height: 140px;" tabindex="0" merch-draggable="draggable" ng-focus="focusHandler($event)">
 						<img id="arrow" width="150" height="30" src="{!URLFOR($Resource.merchandisingIcon, 'img/arrow.png')}"></img>
 					</div>
 					<div id="box" ng-focus="focusHandler($event)" class="Icon" tabindex="0" style="height: 140px;" merch-draggable="draggable">
@@ -180,9 +212,9 @@
 		                </select>
 					</div>
 				</div>
-				<div style="position: absolute; z-index: 0; left: 25%; top: 18%; width: 1400px; height: 600px;">
+				<div style="position: absolute; z-index: 0; left: 17%; top: 18%; width: 1700px; height: 600px;">
 					<form enctype="multipart/form-data" method="post">
-						<div id="CustomerImgContainer" style="width: 550px; height: 550px; display: inline; float: left;">
+						<div id="CustomerImgContainer" style="width: 850px; height: 550px; display: inline; float: left;">
 							<div ng-if="upsertCustomerImage">
 
 								<span style="font: 15pt bold; color: #bbb; ">Drop Customer Image Here</span>
@@ -191,28 +223,39 @@
 							</div>
 							<div ng-show="!upsertCustomerImage">
 								<span id="customerImageView" ng-click="upsertCustomerImage = true">Customer Image</span><span class="icon-loop2" ng-click="upsertCustomerImage = true"><i class="fa fa-cloud-upload " aria-hidden="true" ng-click="upsertCustomerImage = true" id="customerCloud"></i></span>
-								<div id="MerchandisingCustomerMarkContainer" style="width:500px; height: 500px; top: 23.5px; position: absolute;" merch-droppable="droppable">
-									<canvas id="Customer" class="Customer" width= "500px" height= "500px" style="position: absolute; z-index: 25; width: 500px; height: 500px; left: 0px; top: 0px; -webkit-user-select: none; cursor: default;" onclick="mouseclickHandler(this)"></canvas>
+								<div id="MerchandisingCustomerMarkContainer" style="width:800px; height: 500px; top: 23.5px; position: absolute;" merch-droppable="droppable">
+									<canvas id="Customer" class="Customer" width= "800px" height= "500px" style="position: absolute; z-index: 25; width: 800px; height: 500px; left: 0px; top: 0px; -webkit-user-select: none; cursor: default;" onclick="mouseclickHandler(this)"></canvas>
 								</div>
 								<img id="Img" src="{{attachments.customImageURL}}"></img>
 							</div>
 						</div>
 
-						<div id="BrandImgContainer" style="width: 550px; height: 550px; margin-left: 10%; display: inline; float: left;">
+						<div id="BrandImgContainer" style="width: 550px; height: 550px; margin-left: 5%; display: inline; float: left;">
 							<div ng-if="upsertBrandImage">
 								<span style="font: 15pt bold; color: #bbb;">Drop Brand Image Here</span>
 								<input type="file" file-dropzone="[image/png, image/jpeg, image/gif]" file-name="ImageFileName.brandName" file-type="ImageFileType.brandType" fileread="image.brandImage" id="brandImageFile"/>
-								<img id="Img" ng-src='{{image.brandImage}}' />
+								<img id="ImgB" ng-src='{{image.brandImage}}' />
 							</div>
 							<div ng-show="!upsertBrandImage">
 								<span  id="brandImageView" ng-click="upsertBrandImage = true">Brand Image</span><span class="icon-loop2" ng-click="upsertBrandImage = true"><i class="fa fa-cloud-upload" ng-click="upsertBrandImage = true" aria-hidden="true" id="brandCloud"></i></span>
 								<div id="MerchandisingBrandMarkContainer" style="width:500px; height: 500px; top: 23.5px; position: absolute;" merch-droppable="droppable">
 									<canvas id="Brand" class="Brand" width= "500px" height= "500px" style="position: absolute; z-index: 25; width: 500px; height: 500px; left: 0px; top: 0px; -webkit-user-select: none; cursor: default;"></canvas>
 								</div>
-								<img id="Img" src="{{attachments.brandImageURL}}"></img>
+								<img id="ImgB" src="{{attachments.brandImageURL}}"></img>
 							</div>
 						</div>
 					</form>
+				</div>
+				<div id="centerSidebar" style="position: absolute; z-index: 20; margin: auto; left: 0px; top: 0px; bottom: 0px; right: 0px; width: 650px; height: 190px; -webkit-box-shadow: -11px -3px 24px -7px rgba(0,0,0,0.75);
+				-moz-box-shadow: -11px -3px 24px -7px rgba(0,0,0,0.75); box-shadow: -11px -3px 24px -7px rgba(0,0,0,0.75); background-color: #fff">
+					<div style="font: 18pt bold; color: #000; margin-top: 5px; text-align: center; ">Brand per Season:</div>
+					<select size="6" style="margin-left: 10px; margin-top: 5px; left:20px;position: absolute; display: inline; float: left; width: 190px; height: 150px;" id="selectBrand">
+					    <option value="New"> New </option>
+					</select>
+					<select size="6" style="margin-left: 10px; margin-top: 5px; left:220px;position: absolute; display: inline; float: left; width: 190px; height: 150px;" id="selectYear">
+					</select>
+					<select size="6" style="margin-left: 10px; margin-top: 5px; left:420px;position: absolute; display: inline; float: left; width: 190px; height: 150px;" id="selectSeason">
+					</select>
 				</div>
 			</div>
 		</div>
@@ -263,7 +306,7 @@
 
 	app.service('dataManager', function($http, $q) {
 		return {
-			getAttachments : function(accId, newFirstImg, newSecondImg) {
+			getAttachments : function(accId, newFirstImg, newSecondImg, descr) {
 				var deferred = $q.defer();
 				// console.log(accId);
 				// console.log(newFirstImg);
@@ -274,6 +317,7 @@
 					accId,
 					newFirstImg,
 					newSecondImg,
+					descr,
 					function(result, event) {
 						if (event.status) {
 							deferred.resolve(result);
@@ -397,7 +441,17 @@
 		$scope.upsertCustomerImage = false;
 		$scope.upsertBrandImage = false;
 
-		dataManager.getAttachments($scope.accId, null, null).then(function(attachments) {
+		var year = new Date().getFullYear();
+		var currYear = document.getElementById("selectYear");
+		currYear.options[0] = new Option(year, year);
+		var season = getSeason();
+		var currSeason = document.getElementById("selectSeason");
+		currSeason.options[0] = new Option(season, season);
+		document.getElementById("selectBrand").options[0].selected = true;
+		document.getElementById("selectYear").options[0].selected = true;
+		document.getElementById("selectSeason").options[0].selected = true;
+
+		dataManager.getAttachments($scope.accId, null, null, getDescription()).then(function(attachments) {
 			$scope.attachments = JSON.parse(attachments);
 			if ($scope.attachments === null || $scope.attachments.customImageURL === null) {
 				$scope.upsertCustomerImage = true;
@@ -454,14 +508,16 @@
 						attachment.ContentType = $scope.ImageFileType.customType;
 						attachment.ParentId = $scope.accId;
 						attachment.Body = $scope.image.customImage.split(',')[1];
+						attachment.Description = getDescription();
 				attachments.push(attachment);
 			}
-			if ($scope.image.brandImage !=='') {
+			if ($scope.image.brandImage !== '') {
 				var attachment = new sforce.SObject("Attachment");
 						attachment.Name = 'Brand.' + $scope.ImageFileName.brandName.split('.')[1];
 						attachment.ContentType = $scope.ImageFileType.brandType;
 						attachment.ParentId = $scope.accId;
 						attachment.Body = $scope.image.brandImage.split(',')[1];
+						attachment.Description = getDescription();
 				attachments.push(attachment);
 			}
 			if ($scope.image.customImage === '' && $scope.image.brandImage === '') {
@@ -483,6 +539,7 @@
 					if (attach[0].getBoolean("success")) {
 						var newFirstImg = null;
 						var newSecondImg = null;
+						var descr = getDescription();
 						console.log(attach);
 						if (attach[1] !== null && attach[1] !== undefined) {
 							newFirstImg = 'Custom' + ';' + attach[0].get("id");
@@ -495,7 +552,7 @@
 							newFirstImg = 'Brand' + ';' + attach[0].get("id");
 						}
 
-						dataManager.getAttachments($scope.accId, newFirstImg, newSecondImg).then(function(attachments) {
+						dataManager.getAttachments($scope.accId, newFirstImg, newSecondImg, descr).then(function(attachments) {
 							$scope.attachments = JSON.parse(attachments);
 							if ($scope.attachments !== null && $scope.attachments.customImageURL !== null) {
 								$scope.upsertCustomerImage = false;
@@ -546,6 +603,7 @@
 				var getID = (ev.target) ? ev.target : event.srcElement;
 				console.log('> getID: ' + getID.id);
 				$('#'+getID.id).focus();
+				// delete $scope.focusHandler;
 				switch (getID.id) {
 					case 'arrow':
 						if ($scope.elemArray[0] === 0) { toDo = true; $scope.elemArray = [1, 0, 0, 0, 0]; }
@@ -565,13 +623,8 @@
 				}
 				console.log($scope.elemArray + ' ' + toDo);
 				if (toDo) { console.log(ev); FocusService.focusCanvas(getID.id, $scope.elemArray); }
-/*				ev.stopPropagation();
-    			ev.preventDefault();
-    			ev.cancelBubble = true;
-    			ev.returnValue = false;*/
 			}
 		}
-
 	});
 
 	 app.factory('focus', function($timeout, $window) {
@@ -981,9 +1034,11 @@
 	      oImg.setTop(0);
 	      oImg.set('selectable', false);
 	      oImg.hoverCursor = 'default';
+          var ih = oImg.height;
+		  var iw = oImg.width;
 	      customer.setBackgroundImage(oImg);
 		  customer.backgroundImage.width = customer.getWidth();
-		  customer.backgroundImage.height = customer.getHeight();
+		  customer.backgroundImage.height = Math.round(ih * customer.getWidth() / iw);
 	      customer.renderAll();
 	      // customer.add(oImg);
 	      // customer.sendToBack(oImg);
@@ -1158,9 +1213,85 @@
 	      else if ((activeCanvas.getActiveObject().get('type') === 'group') || (activeCanvas.getActiveObject().get('type') === 'line') || (activeCanvas.getActiveObject().get('type') === 'i-text')) {$(".fillBtn").remove();}
     });*/
 
+	var OnClick = function(Sender, EventArgs)
+	{
+	    //Code
+	}
+
+	function getSeason() {
+	    var month = new Date().getMonth();
+	    var season = '';
+	    switch(month) {
+	        case 11:
+	        case 0:
+	        case 1:
+	            season = 'Winter';
+	        break;
+	        case 2:
+	        case 3:
+	        case 4:
+	            season = 'Spring';
+	        break;
+	        case 5:
+	        case 6:
+	        case 7:
+	            season = 'Summer';
+	        break;
+	        case 8:
+	        case 9:
+	        case 10:
+	            season = 'Autumn';
+	        break;
+	    }
+	    return(season);
+	}
+
+	function getDescription() {
+		var descr =  document.getElementById("selectBrand").options[document.getElementById("selectBrand").selectedIndex].text + ';' +
+						document.getElementById("selectYear").options[document.getElementById("selectYear").selectedIndex].text + ';' +
+						document.getElementById("selectSeason").options[document.getElementById("selectSeason").selectedIndex].text;
+		return descr;
+	}
+
 	window.onload = function() {
 		console.log('loaded...');
+/*		var listboxID = document.getElementById('selectBrand');
+    	var oListBoxBrand, oListBoxYear, oListBoxSeason;
+        var Arguments = {
+            Base: listboxID,
+            Rows: 5,
+            Width: 200,
+            NormalItemColor: null,
+            NormalItemBackColor: null,
+            AlternateItemColor: null,
+            AlternateItemBackColor: null,
+            SelectedItemColor: null,
+            SelectedIItemBackColor: null,
+            HoverItemColor: null,
+            HoverItemBackColor: null,
+            HoverBorderdColor: null,
+            ClickEventHandler: OnClick
+        };
+
+        oListBoxBrand = new ListBox(Arguments);
+
+        oListBoxBrand.AddItem('CodeProject.com','http://www.codeproject.com');
+        oListBoxBrand.AddItem('yahoo.com','http://www.yahoo.com/');
+        oListBoxBrand.AddItem
+		('microsoft.com','http://www.microsoft.com/en/us/default.aspx');
+        oListBoxBrand.AddItem('asp.net','http://www.asp.net');
+        oListBoxBrand.AddItem('cricinfo.com','http://www.cricinfo.com/');
+        oListBoxBrand.AddItem('AOL','http://www.aol.com/');
+        oListBoxBrand.AddItem('STPL','http://stpl.biz');
+
+        listboxID = document.getElementById('selectYear');
+        oListBoxYear = new ListBox(Arguments);
+
+        listboxID = document.getElementById('selectSeason');
+        oListBoxSeason = new ListBox(Arguments);*/
 	}
+
+	window.onunload = function(){oListBox.Dispose(); }
 
 	function savePrevColor(){
 		prevColor = document.getElementById("draw_color").value;

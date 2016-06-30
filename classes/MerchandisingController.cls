@@ -9,11 +9,11 @@ public with sharing class MerchandisingController {
 	}
 
 	@RemoteAction
-	public static String getAttachment(String accId, String newFirstImg, String newSecondImg) {
+	public static String getAttachment(String accId, String newFirstImg, String newSecondImg, String descr) {
 		String imageURL='/servlet/servlet.FileDownload?file=';
 		String customImageURL = '';
 		String brandImageURL = '';
-		List<Attachment> attachedFiles = [SELECT Id, Name FROM Attachment WHERE parentId =: accId ];
+		List<Attachment> attachedFiles = [SELECT Id, Name FROM Attachment WHERE parentId =: accId AND Description = :descr];
 
 		if (attachedFiles.size() == 0) {
 			return NULL;
