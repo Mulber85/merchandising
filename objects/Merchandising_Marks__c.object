@@ -44,18 +44,22 @@
         <actionName>View</actionName>
         <type>Default</type>
     </actionOverrides>
+    <allowInChatterGroups>false</allowInChatterGroups>
     <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
     <deploymentStatus>Deployed</deploymentStatus>
+    <deprecated>false</deprecated>
     <enableActivities>false</enableActivities>
     <enableBulkApi>true</enableBulkApi>
     <enableFeeds>false</enableFeeds>
     <enableHistory>false</enableHistory>
     <enableReports>false</enableReports>
+    <enableSearch>true</enableSearch>
     <enableSharing>true</enableSharing>
     <enableStreamingApi>true</enableStreamingApi>
     <fields>
         <fullName>Account__c</fullName>
         <deleteConstraint>SetNull</deleteConstraint>
+        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <label>Account</label>
         <referenceTo>Account</referenceTo>
@@ -65,13 +69,35 @@
         <type>Lookup</type>
     </fields>
     <fields>
-        <fullName>Cmarks__c</fullName>
+        <fullName>CmarksExt__c</fullName>
+        <deprecated>false</deprecated>
         <externalId>false</externalId>
-        <label>Cmarks</label>
-        <length>32000</length>
+        <label>CmarksExt</label>
+        <length>131072</length>
         <trackTrending>false</trackTrending>
         <type>LongTextArea</type>
         <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
+        <fullName>Cmarks__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Cmarks</label>
+        <length>131072</length>
+        <trackTrending>false</trackTrending>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
+        <fullName>Description__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Description</label>
+        <length>255</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
     </fields>
     <label>Merchandisng Mark</label>
     <nameField>

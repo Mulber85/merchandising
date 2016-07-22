@@ -1,0 +1,2805 @@
+<apex:page standardController="Account" showHeader="false" sidebar="false">
+<script src="https://code.jquery.com/jquery-1.12.4.min.js"  integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.7/angular.min.js"></script>
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-strap/2.3.9/angular-strap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-strap/2.3.9/angular-strap.tpl.min.js"></script> -->
+<apex:stylesheet value="https://fonts.googleapis.com/css?family=Libre+Baskerville:400,700,400italic"/>
+<apex:includescript value="/soap/ajax/37.0/connection.js" />
+<!-- <link rel="stylesheet" href="path/to/font-awesome/css/font-awesome.min.css"/>
+ --><apex:stylesheet value="{!URLFOR($Resource.Spinner, 'css/stylesheets.css')}" />
+<apex:stylesheet value="{!URLFOR($Resource.fontawesome, 'css/font-awesome.min.css')}"/>
+<!-- <apex:stylesheet value="{!URLFOR($Resource.merchandisingIcon, 'img')}" /> -->
+<apex:includeScript value="{!URLFOR($Resource.fabricjsmaster, '/dist/fabric.js')}"/>
+<apex:includeScript value="{!URLFOR($Resource.rounding, 'rounding.js')}"/>
+<apex:includeScript value="{!URLFOR($Resource.fileSaver, 'fileSaver.js')}"/>
+<apex:includeScript value="{!URLFOR($Resource.canvasToBlob, 'canvasToBlob.js')}"/>
+<apex:includeScript value="{!URLFOR($Resource.sweetalert, 'dist/sweetalert.min.js')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.sweetalert, 'dist/sweetalert.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.sweetalert, 'themes/twitter/twitter.css')}"/>
+<apex:includeScript value="{!URLFOR($Resource.humanejs, 'humane.min.js')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.humanejs, 'themes/boldlight.css')}"/>
+<apex:includeScript value="{!URLFOR($Resource.linkedselect, 'linkedselect.js')}"/>
+<apex:includeScript value="{!URLFOR($Resource.listBox, 'listBox.js')}"/>
+<apex:includeScript value="{!URLFOR($Resource.html2canvas, 'html2canvas.js')}"/>
+<script type="text/javascript" src="https://cdn.emailjs.com/dist/email.min.js"></script>
+<script type="text/javascript">
+   (function(){
+      emailjs.init("user_dm14V4d3OjTqdBdATLUAd");
+   })();
+</script>
+
+<style>
+
+    #leftSidebar:hover {
+        cursor: pointer;
+    }
+
+/*  .ImgAW {
+    overflow: hidden;
+    padding-left: 0px;
+    padding-bottom: 0px;
+    width: 700px;
+    }
+
+    .ImgAH {
+    overflow: hidden;
+    padding-left: 0px;
+    padding-bottom: 0px;
+    height: 700px;
+    }
+
+    .ImgAW img {
+    max-width: 700px;
+    width:expression(this.width > 700 ? "700px" : this.width);
+    }
+
+    .ImgAH img {
+    max-height: 700px;
+    height:expression(this.height > 700 ? "700px" : this.height);
+    }*/
+
+    #Img {
+    overflow: hidden;
+    padding-left: 0px;
+    padding-bottom: 0px;
+    width: 700px;
+    }
+
+    #Img img {
+    overflow: hidden;
+    max-width: 700px;
+    width:expression(this.width > 700 ? "700px" : this.width);
+    }
+
+    #ImgB {
+    overflow: hidden;
+    padding-left: 0px;
+    padding-bottom: 0px;
+    width: 700px;
+    }
+
+    #ImgB img {
+    max-width: 700px;
+    width:expression(this.width > 700 ? "700px" : this.width);
+    }
+
+    button {
+        cursor: pointer;
+    }
+
+    #customerImageFile {
+        width: 650px;
+        height: 650px;
+        border: 2px dashed #bbb;
+        border-radius: 5px;
+        padding: 25px;
+        text-align: center;
+        font: 15pt bold;
+        color: #bbb;
+        margin-bottom: 20px;
+    }
+
+    #brandImageFile {
+        width: 650px;
+        height: 650px;
+        border: 2px dashed #bbb;
+        border-radius: 5px;
+        padding: 25px;
+        text-align: center;
+        font: 15pt bold;
+        color: #bbb;
+        margin-bottom: 20px;
+    }
+
+    #topSidebar {
+        width: 100%;
+        padding: 6px 6px 4px 6px;
+        height: 38px;
+        line-height: 100%;
+        box-shadow: -2px 0px 3px #666666;
+        -webkit-box-shadow: -2px 0px 3px #666666;
+        -moz-box-shadow: -2px 0px 3px #666666;
+        background: #000000;
+        background: linear-gradient(top,  #7D7D7D,  #000000);
+        background: -ms-linear-gradient(top,  #7D7D7D,  #000000);
+        background: -webkit-gradient(linear, left top, left bottom, from(#7D7D7D), to(#000000));
+        background: -moz-linear-gradient(top,  #7D7D7D,  #000000);
+        position:fixed;
+        z-index:15;
+    }
+
+    .button-small {
+        height: 30px;
+        padding: 0 10px;
+        border-radius: 4px;
+        text-decoration: none;
+        box-shadow: inset 0 -2px 0 0 rgba(0, 0, 0, 0.15);
+        font-size: 14px;
+        line-height: 28px;
+        display: inline-block;
+        vertical-align: middle;
+        margin: 0 5px 5px 0;
+        text-align: center;
+        cursor: pointer;
+        border: none;
+        background: #fafafa;
+        color: #222;
+        position: absolute;
+    }
+    .button-small:hover {
+        text-decoration: none;
+        background: #e6e6e6;
+        color: #222;
+        z-index: 100;
+    }
+    .icon-loop2 {
+        content: "\ea2e";
+        color: #bbb;
+        margin-left: 5px;
+        z-index: 100;
+    }
+    .icon-loop2:hover {
+        cursor: pointer;
+        color: #000 !important;
+        z-index: 100;
+    }
+    #draw_color:hover {
+        cursor: pointer;
+    }
+    #customerImageView {
+        font: 15pt bold; color: #bbb; z-index: 50;
+    }
+    #customerImageView:hover {
+        color: #000;
+        cursor: pointer;
+    }
+    #brandImageView {
+        font: 15pt bold; color: #bbb; z-index: 50;
+    }
+    #brandImageView:hover {
+        color: #000;
+        cursor: pointer;
+    }
+    .Icon {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+    }
+    .Icon:hover {
+        background-color: #bbb;
+    }
+    .Icon:focus {
+        background-color: #bbb;
+    }
+    .disabledbutton {
+        pointer-events: none;
+        opacity: 0.4;
+    }
+    #info {
+        -ms-transform: rotate(45deg);
+        -webkit-transform: rotate(45deg);
+        transform: rotate(45deg);
+    }
+    #rightBottomSidebar {
+        background: #000000;
+        background: linear-gradient(top,  #7D7D7D,  #000000);
+        background: -ms-linear-gradient(top,  #7D7D7D,  #000000);
+        background: -webkit-gradient(linear, left top, left bottom, from(#7D7D7D), to(#000000));
+        background: -moz-linear-gradient(top,  #7D7D7D,  #000000);
+    }
+</style>
+
+    <body ng-app="MerchandisingApp" class="ng-scope">
+        <div class="app" ng-controller="MerchandisingCtrl">
+            {{dropzone}}
+            {{cdropzone}}
+            {{isAdmin}}
+            <div class="sk-double-bounce" ng-show="Loading">
+                <div class="sk-child sk-double-bounce1"></div>
+                <div class="sk-child sk-double-bounce2"></div>
+            </div>
+            <div id="contentBlock" class="bodyDis" ng-class="{classOpacity: Loading, disableClick: Loading}">
+                <div id="topSidebar" >
+                    <div style="left:300px;position: absolute; z-index: 100;"><a class="button-small" value="Back" ng-href="{!LEFT($CurrentPage.URL,FIND('/',$CurrentPage.URL,9))}/{{accId}}">Back</a></div>
+                    <div style="left:380px;position: absolute; z-index: 100;"><input class="button-small" type="button" value="Save" ng-click="save();"/></div>
+                    <div style="left:460px;position: absolute; z-index: 100;"><input class="button-small" type="button" value="Save PNG" ng-click="savePNG();" /></div>
+                    <div style="left:574px;position: absolute; z-index: 100;"><input class="button-small" type="button" value="Send an Email" ng-click="sendMail();" /></div>
+                    <div id="cinfo" style="left:720px; position: absolute; font: 14pt bold; font-style: italic; color: #bbb; margin-top: 5px;" ></div>
+                    <div style="right:2%; position: absolute; font: 25pt bold; color: #bbb;" >Merchandising</div>
+                </div>
+
+                <div id="leftSidebar" style="position: fixed; z-index: 20; left: 0px; top: 0px; min-width: 280px; height: 100%; -webkit-box-shadow: 11px 0px 24px -7px rgba(0,0,0,0.75);
+                -moz-box-shadow: 11px 0px 24px -7px rgba(0,0,0,0.75); box-shadow: 11px 0px 24px -7px rgba(0,0,0,0.75); background-color: #fff">
+                    <div style="font: 30pt bold; color: #000; text-align: center; ">Add Elements:</div>
+                    <div id="arrow" class="Icon" style="margin-top: 10%; height: 140px;" tabindex="0" merch-draggable="draggable" ng-focus="focusHandler('arrow'); $event.stopPropagation();">
+                        <img id="arrow" width="150" height="30" src="{!URLFOR($Resource.merchandisingIcon, 'img/arrow.png')}"></img>
+                    </div>
+                    <div id="box" ng-focus="focusHandler('box'); $event.stopPropagation();" class="Icon" tabindex="0" style="height: 140px;" merch-draggable="draggable">
+                        <img id="box" width="120" height="80" src="{!URLFOR($Resource.merchandisingIcon, 'img/box.png')}"></img>
+                    </div>
+                    <div id="line" ng-focus="focusHandler('line'); $event.stopPropagation();" class="Icon" tabindex="0" style="height: 140px;" merch-draggable="draggable">
+                        <img id="line" width="150" height="50" src="{!URLFOR($Resource.merchandisingIcon, 'img/line.png')}"></img>
+                    </div>
+                    <div id="text" ng-focus="focusHandler('text'); $event.stopPropagation();" class="Icon" tabindex="0" style="height: 140px;" merch-draggable="draggable">
+                        <img id="text" width="50" height="50" src="{!URLFOR($Resource.merchandisingIcon, 'img/text.png')}"></img>
+                    </div>
+                    <div id="question" ng-focus="focusHandler('question'); $event.stopPropagation();" class="Icon" tabindex="0" style="height: 140px;" merch-draggable="draggable">
+                        <img id="question" width="50" height="50" src="{!URLFOR($Resource.merchandisingIcon, 'img/question.png')}"></img>
+                    </div>
+                    <div style="left: 20%; position: absolute; bottom: 7%; z-index: 50;">
+                        <label style="font: 15pt bold; color: #000;">Color: </label><input type="color" id="draw_color" onchange="changeColorGroup()" onclick="savePrevColor()" style="z-index: 50"></input>
+                    </div>
+                    <div style="left: 20%; position: absolute; bottom: 3%; z-index: 50;">
+                        <label for="font-control" style="font: 15pt bold; color: #000;">Font: </label>
+                        <select id="font-control" name="font-control" onchange="textBoxChanged()">
+                            <option value="Arial">Arial</option>
+                            <option value="Courier New">Courier</option>
+                            <option value="Tahoma">Tahoma</option>
+                            <option value="Times New Roman">Times</option>
+                            <option value="Verdana">Verdana</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="workPanel" style="position: absolute; z-index: 0; left: 300px; top: 130px; width: 1700px; height: 700px;">
+                    <form enctype="multipart/form-data" method="post">
+                        <div id="CustomerImgContainer" style="width: 750px; height: 750px; display: inline; float: left;">
+                            <div ng-if="upsertCustomerImage" id="upsCustomer">
+
+                                <span style="font: 15pt bold; color: #bbb; ">Drop Customer Image Here</span>
+                                <input type="file" file-dropzone="[image/png, image/jpeg, image/gif]" file-name="ImageFileName.customName" file-type="ImageFileType.customType" fileread="image.customImage" id="customerImageFile"/>
+                                <img id="Img" ng-src='{{image.customImage}}'/>
+                            </div>
+                            <div ng-show="!upsertCustomerImage">
+                                <span id="customerImageView" ng-click="upsertCustomerImage = true">Customer Image</span><span class="icon-loop2" ng-click="upsertCustomerImage = true"><i class="fa fa-cloud-upload " aria-hidden="true" ng-click="upsertCustomerImage = true" id="customerCloud"></i></span>
+                                <div id="MerchandisingCustomerMarkContainer" style="width:700px; height: 700px; top: 23.5px; position: absolute;" merch-droppable="droppable">
+                                    <canvas id="Customer" class="Customer" width= "700px" height= "700px" style="position: absolute; z-index: 25; width: 700px; height: 700px; left: 0px; top: 0px; -webkit-user-select: none; cursor: default;" onclick="mouseclickHandler(this)"></canvas>
+                                </div>
+                                <div style="width:700px; height: 700px; position: relative; overflow: hidden">
+                                    <img id="Img" src="{{customImageURL}}" style="position: absolute;"></img>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="BrandImgContainer" style="width: 750px; height: 750px; margin-left: 70px; display: inline; float: left;">
+                            <div ng-if="upsertBrandImage">
+                                <span style="font: 15pt bold; color: #bbb;">Drop Brand Image Here</span>
+                                <input type="file" file-dropzone="[image/png, image/jpeg, image/gif]" file-name="ImageFileName.brandName" file-type="ImageFileType.brandType" fileread="image.brandImage" id="brandImageFile"/>
+                                <img id="ImgB" ng-src='{{image.brandImage}}' />
+                            </div>
+                            <div ng-show="!upsertBrandImage">
+                                <span  id="brandImageView" ng-click="upsertBrandImage = true">Brand Image</span><span class="icon-loop2" ng-click="upsertBrandImage = true"><i class="fa fa-cloud-upload" ng-click="upsertBrandImage = true" aria-hidden="true" id="brandCloud"></i></span>
+                                <div id="MerchandisingBrandMarkContainer" style="width:700px; height: 700px; top: 23.5px; position: absolute;" merch-droppable="droppable">
+                                    <canvas id="Brand" class="Brand" width= "700px" height= "700px" style="position: absolute; z-index: 25; width: 700px; height: 700px; left: 0px; top: 0px; -webkit-user-select: none; cursor: default;"></canvas>
+                                </div>
+                                <div style="width:700px; height: 700px; position: relative; overflow: hidden">
+                                    <img id="ImgB" src="{{brandImageURL}}" style="position: absolute;"></img>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div style="position: fixed; z-index: 20; margin: auto; bottom: 0px; right: 0px;">
+                    <img id="info" src="{!URLFOR($Resource.merchandisingIcon, 'img/info.gif')}"></img>
+                </div>
+                <div id="rightBottomSidebar" style="position: fixed; z-index: 20; margin: auto; bottom: 0px; right: -650px; width: 650px; height: 142px; -webkit-box-shadow: -11px -3px 24px -7px rgba(0,0,0,0.75);
+                -moz-box-shadow: -11px -3px 24px -7px rgba(0,0,0,0.75); box-shadow: -11px -3px 24px -7px rgba(0,0,0,0.75); background-color: #fff">
+                    <input type="text" id="newBrand" style="margin-left: 10px; margin-top: 10px; left:20px;position: absolute; float: left; width: 185px; display:block;"></input>
+                    <select id="year" name="year" style="margin-left: 10px; margin-top: 10px; left:220px;position: absolute; float: left; width: 60px; display:block; height:20px" disabled="disabled">
+                      <script>
+                          var myDate = new Date();
+                          var year = myDate.getFullYear();
+                          for(var i = year; i >= 1900; i--){
+                              document.write('<option value="'+i+'">'+i+'</option>');
+                          }
+                      </script>
+                    </select>
+                    <select id="season" name="season" style="margin-left: 10px; margin-top: 10px; left:290px;position: absolute; float: left; width: 120px; display:block; height:20px" disabled="disabled">
+                        <option value="Winter">Winter</option>
+                        <option value="Spring">Spring</option>
+                        <option value="Summer">Summer</option>
+                        <option value="Autumn">Autumn</option>
+                    </select>
+                    <img id="edit" class="Icon" src="{!URLFOR($Resource.merchandisingIcon, 'img/edit.svg')}" style="margin-left: 10px; margin-top: 10px; left:420px;position: absolute; float: left; width: 20px; display:none; height:20px" ng-click="changeState();"></img>
+                    <div style="font: 18pt bold; color: #bbb; margin-top: 5px; text-align: right; margin-right: 30px;">Brand per Season</div>
+                    <select size="6" style="margin-left: 10px; margin-top: 5px; left:20px;position: absolute; display: inline; float: left; width: 190px; height: 100px;" id="selectBrand">
+                        <option value="New"> New </option>
+                    </select>
+                    <select size="6" style="margin-left: 10px; margin-top: 5px; left:220px;position: absolute; display: inline; float: left; width: 190px; height: 100px;" id="selectYear">
+                    </select>
+                    <select size="6" style="margin-left: 10px; margin-top: 5px; left:420px;position: absolute; display: inline; float: left; width: 190px; height: 100px;" id="selectSeason">
+                    </select>
+                </div>
+            </div>
+        </div>
+    </body>
+
+    <script type="text/javascript">
+        var app = angular.module("MerchandisingApp", []);
+        var dropzone = true;
+        var cdropzone = true;
+        var isAdmin = false;
+
+    (function() {
+        'use strict';
+        sforce.connection.sessionId = '{!GETSESSIONID()}';
+        var profileId = sforce.connection.getUserInfo().profileId;
+        var profileName = sforce.connection.query("select NAME from PROFILE where ID = '" + profileId + "' LIMIT 1").getArray("records");
+        console.log('user profile: ' + profileName[0].Name);
+        //# Customer Image can be uploaded by Sales Rep or by System Administrator and they can draw.
+        console.log(['System Administrator', 'Sales Rep'].indexOf(profileName[0].Name));
+        if (['System Administrator', 'Sales Rep'].indexOf(profileName[0].Name) === -1) {
+            document.getElementById('customerImageView').style.visibility = 'hidden';
+            document.getElementById('customerCloud').style.visibility = 'hidden';
+            document.getElementById('customerImageFile').disabled = true;
+            cdropzone = false;
+            $("#leftSidebar").addClass("disabledbutton");
+        }
+        //# Brand Image can be uploaded by System Administrator only. Rep shouldn't see the upload button.
+        if (profileName[0].Name !== 'System Administrator') {
+            document.getElementById('brandImageView').style.visibility = 'hidden';
+            document.getElementById('brandCloud').style.visibility = 'hidden';
+            document.getElementById('brandImageFile').disabled = true;
+            dropzone = false;
+        } else {
+            isAdmin = true;
+            $('#edit').css("display", "block");
+        }
+    })();
+
+    app.config(['$httpProvider',function ($httpProvider) {
+        var sessionId = "{!$Api.Session_ID}";
+        $httpProvider.defaults.useXDomain = true;
+        //$httpProvider.defaults.withCredentials = true;
+        delete $httpProvider.defaults.headers.common["X-Requested-With"];
+        $httpProvider.defaults.headers.common["Accept"] = 'application/x-www-form-urlencoded; charset=UTF-8';//"application/jsonp";
+        $httpProvider.defaults.headers.common["Access-Control-Allow-Origin"] = "*";
+        $httpProvider.defaults.headers.common['Access-Control-Allow-Methods'] = "GET, POST, PUT, DELETE, OPTIONS";
+        $httpProvider.defaults.headers.common['Access-Control-Allow-Headers'] = "Content-Type, Authorization, Accept, X-Requested-With, X-PINGOTHER, Origin";
+        $httpProvider.defaults.headers.common["Content-Type"] = 'application/x-www-form-urlencoded; charset=UTF-8';//"application/json";
+        $httpProvider.defaults.headers.common['Authorization'] = "Bearer " + sessionId ;
+        $httpProvider.defaults.headers.common['X-User-Agent'] = "MyClient" ;
+     }])
+
+    app.service('dataManager', function($http, $q) {
+        return {
+            getAttachments2 : function(imageURL) {
+                var deferred = $q.defer();
+                // console.log(accId);
+                // console.log(newFirstImg);
+                // console.log(newSecondImg);
+
+                            $http({url: window.location.origin + '/services/data/v37.0/sobjects/Attachment/' + imageURL.replace('/servlet/servlet.FileDownload?file=', '') + '/body', method: 'GET', responseType : 'arraybuffer'})
+
+                                .success(function(data, status, response, headers) {
+                                deferred.resolve(data);
+                            })
+                                .error(function(err, status, response, headers) {
+                                console.log(headers);
+                                console.log(err);
+                                deferred.reject(err);
+                            });
+                return deferred.promise;
+            }
+        }
+    });
+
+    app.controller('MerchandisingCtrl', function($scope, $location, dataManager, $q, ArrowService, BoxService, SaveCanvasService, LoadCanvasService, FocusService) {
+        var vm = this;
+        $scope.Loading = true;
+        $scope.$watch('Loading', function(newVal, oldVal){
+            console.log('changed');
+            console.log(newVal);
+            console.log(oldVal);
+        }, true);
+        console.log($scope.Loading);
+        // console.log(('angular' in window));
+        $scope.objColor = document.getElementById("draw_color").value;
+        $scope.canvas;
+        $scope.upsertMarks = false;
+        var dscr = '';
+
+        if (cdropzone) {
+            if (!$scope.upsertCustomerImage) {
+                $('#arrow').focus();
+                FocusService.focusCanvas('arrow', [1, 0, 0, 0, 0], 'arrow');
+                $scope.elemArray = [1, 0, 0, 0, 0];
+            }
+        } else { humane.clickToClose = true; humane.timeout = 5000; humane.log("Only the System Administrator or Sales Rep can draw on Customer image"); }
+
+        vm.controls = [
+            {
+                type: "arrow"
+            },
+            {
+                type: "box"
+            },
+            {
+                type: "line"
+            },
+            {
+                type: "text"
+            },
+            {
+                type: "questions"
+            }
+        ];
+
+        vm.brandControls = [];
+        vm.customerControls = [];
+
+        /* fabric */
+        var customer = new fabric.Canvas('Customer');
+        var brand = new fabric.Canvas('Brand');
+
+        // customer.setBackgroundColor('rgb(255, 255, 255)');
+        // brand.setBackgroundColor('rgb(255, 255, 255)');
+
+        customer.isDrawingMode = false;
+        customer.freeDrawingBrush.width = 5;
+        customer.renderOnAddRemove  = true;
+
+        brand.isDrawingMode = false;
+        brand.freeDrawingBrush.width = 5;
+        brand.renderOnAddRemove  = true;
+
+        $scope.attachments = [];
+        $scope.merchandisingMarksWrapper = [];
+        $scope.accId = window.location.search.split('=')[1].split('&')[0];
+        $scope.upsertCustomerImage = false;
+        $scope.upsertBrandImage = false;
+
+        $scope.customImageURL = '';
+        $scope.brandImageURL = '';
+
+        var year = new Date().getFullYear();
+        var currYear = document.getElementById("selectYear");
+        //currYear.options[0] = new Option(year, year);
+        var season = getSeason();
+        //var currSeason = document.getElementById("selectSeason");
+        // currSeason.options[0] = new Option(season, season);
+        switch (season) {
+            case 'Winter' : $('#selectBrand').css('background-color', '#5aa095'); $('#selectYear').css('background-color', '#5aa095'); $('#selectSeason').css('background-color', '#5aa095'); break
+            case 'Spring' : $('#selectBrand').css('background-color', '#83ca82'); $('#selectYear').css('background-color', '#83ca82'); $('#selectSeason').css('background-color', '#83ca82'); break
+            case 'Summer' : $('#selectBrand').css('background-color', '#dd9d72'); $('#selectYear').css('background-color', '#dd9d72'); $('#selectSeason').css('background-color', '#dd9d72'); break
+            case 'Autumn' : $('#selectBrand').css('background-color', '#ddd481'); $('#selectYear').css('background-color', '#ddd481'); $('#selectSeason').css('background-color', '#ddd481'); break
+        }
+        document.getElementById("selectBrand").options[0].selected = true;
+        // document.getElementById("selectYear").options[0].selected = true;
+        // document.getElementById("selectSeason").options[0].selected = true;
+        //var syncList1 = new syncList;
+        var allBrands = sforce.connection.query("SELECT Id, Description FROM Attachment WHERE Attachment.parentId = '" + $scope.accId + "' AND Attachment.Name LIKE 'Brand%' ORDER BY Attachment.Description");
+        var recordsAllBrands = allBrands.getArray('records');
+        var brands = [];
+        var seasons = [];
+        for (var i = 0; i < recordsAllBrands.length; i++) {
+            brands.push(recordsAllBrands[i].Description.split(';')[0]);
+        }
+        var brands_unique = [];
+        $.each(brands, function(i, e) {
+            if ($.inArray(e, brands_unique) == -1) { brands_unique.push(e); };
+        });
+
+        $.each(brands_unique, function(i, e) {
+            document.getElementById("selectBrand").options[i+1] = new Option(e, e);
+        });
+
+        function removeOptions(selectbox)
+        {
+            var i;
+            for(i = selectbox.options.length - 1 ; i >= 0 ; i--)
+            {
+                selectbox.remove(i);
+            }
+        }
+
+        function removeOptionsB(selectbox)
+        {
+            var i;
+            for(i = selectbox.options.length - 1 ; i > 0 ; i--)
+            {
+                selectbox.remove(i);
+            }
+        }
+
+        $('#selectBrand').change(function() {
+            removeOptions(document.getElementById("selectYear"));
+            removeOptions(document.getElementById("selectSeason"));
+            if ((document.getElementById("selectBrand").selectedIndex) === 0) {
+                $('#newBrand').css("display", "block");
+                $('#year').css("display", "block");
+                $('#season').css("display", "block");
+                if (isAdmin) { $('#edit').css("display", "block"); }
+                $('#newBrand').focus();
+            } else {
+                $('#newBrand').css("display", "none");
+                $('#year').css("display", "none");
+                $('#season').css("display", "none");
+                if (isAdmin) { $('#edit').css("display", "none"); }
+            }
+            var val = $("#selectBrand option:selected").text();
+            var getYears = sforce.connection.query("SELECT Description FROM Attachment WHERE Attachment.parentId = '" + $scope.accId + "' AND Attachment.Description LIKE '" + val + ";%' AND Attachment.Name LIKE 'Brand%' ORDER BY Attachment.Description");
+            var recordsGetYears = getYears.getArray('records');
+            var years = [];
+            for (var i = 0; i < recordsGetYears.length; i++) {
+                years.push(recordsGetYears[i].Description.split(';')[1]);
+            }
+            var years_unique = [];
+            $.each(years, function(i, e) {
+                if ($.inArray(e, years_unique) == -1) { years_unique.push(e); };
+            });
+            $.each(years_unique, function(i, e) {
+                document.getElementById("selectYear").options[i] = new Option(e, e);
+            });
+        });
+
+        $('#selectYear').change(function() {
+            removeOptions(document.getElementById("selectSeason"));
+            var val = $("#selectBrand option:selected").text() + ';' + $("#selectYear option:selected").text();
+            var getSeasons = sforce.connection.query("SELECT Description FROM Attachment WHERE Attachment.parentId = '" + $scope.accId + "' AND Attachment.Description LIKE '" + val + ";%' AND Attachment.Name LIKE 'Brand%' ORDER BY Attachment.Description");
+            var recordsGetSeasons = getSeasons.getArray('records');
+            var seasons = [];
+            for (var i = 0; i < recordsGetSeasons.length; i++) {
+                seasons.push(recordsGetSeasons[i].Description.substring(recordsGetSeasons[i].Description.lastIndexOf(";") + 1, recordsGetSeasons[i].Description.length));
+            }
+            $.each(seasons, function(i, e) {
+                document.getElementById("selectSeason").options[i] = new Option(e, e);
+            });
+        });
+        //syncList1.sync("selectBrand","selectYear","selectSeason");
+
+//***********************************************************
+        $scope.getAttachments = function(accId, newFirstImg, newSecondImg, descrip, $apply) {
+            console.log('@accId=' + accId);
+            console.log('@newFirstImg=' + newFirstImg);
+            console.log('@newSecondImg=' + newSecondImg);
+            var imageURL = '/servlet/servlet.FileDownload?file=';
+            $scope.customImageURL = '';
+            $scope.brandImageURL = '';
+            //var descrip = getDescription();
+
+            var attachedFiles = sforce.connection.query("SELECT Id, Name, LastModifiedDate FROM Attachment WHERE Attachment.parentId = '" + accId + "' AND Attachment.Description = '" + descrip + "' ORDER BY Attachment.LastModifiedDate");
+            // var marks = sforce.connection.query("SELECT Id, Name, merchMarks__Cmarks__c, merchMarks__Account__r.Name FROM merchMarks__Merchandising_Marks__c WHERE merchMarks__Merchandising_Marks__c.merchMarks__Account__c ='" + accId + "' AND merchMarks__Merchandising_Marks__c.merchMarks__Description__c ='" + descrip + "' ORDER BY merchMarks__Account__r.Name LIMIT 2");
+
+
+            if (attachedFiles.size == 0) {
+                $scope.attachments = null;
+            }
+
+            var recordsAttachedFiles = attachedFiles.getArray('records');
+            // var recordsMarks = marks.getArray('records');
+            var itemsToDel = [];
+            // var marksToDelete = [];
+            if (attachedFiles.size > 2) {
+                var attachedFilesToDelete = [];
+                var newFirstImgName = newFirstImg.split(';')[0];
+                var newFirstImgId = newFirstImg.split(';')[1];
+                var newSecondImgName;
+                var newSecondImgId;
+                if (newSecondImg != null) {
+                    newSecondImgName = newSecondImg.split(';')[0];
+                    newSecondImgId = newSecondImg.split(';')[1];
+                }
+
+                var recordsAttachedFiles = attachedFiles.getArray('records');
+                for (var i = 0; i < recordsAttachedFiles.length; i++) {
+                    console.log('@recordsAttachedFiles.length='+recordsAttachedFiles.length);
+                    var attachedFile = recordsAttachedFiles[i];
+                    console.log('@newSecondImg='+newSecondImg);
+                    console.log('@attachedFile.Id='+attachedFile.Id);
+                    console.log('@newFirstImgId='+newFirstImgId);
+                    console.log('@attachedFile.Name='+attachedFile.Name);
+                    console.log('@newFirstImgName='+newFirstImgName);
+                    // if (newFirstImg !== null) {
+                    //  if ((attachedFile.Name.indexOf('Customer') != -1) && (attachedFile.Id != newFirstImgId)) {
+                    //      attachedFilesToDelete.push(attachedFile.Id);
+                    //      itemsToDel.push(i);
+                    //  }
+                    // }
+                    // else if ((newFirstImg === null) && ($scope.upsertCustomerImage)) {
+                    //  if (attachedFile.Name.indexOf('Customer') != -1) {
+                    //      attachedFilesToDelete.push(attachedFile.Id);
+                    //      itemsToDel.push(i);
+                    //  }
+                    // }
+                    // if (newSecondImg !== null) {
+                    //  if ((attachedFile.Name.indexOf('Brand') != -1) && (attachedFile.Id != newSecondImgId)) {
+                    //      attachedFilesToDelete.push(attachedFile.Id);
+                    //      itemsToDel.push(i);
+                    //  }
+                    // }
+                    // else if ((newSecondImg === null) && ($scope.upsertBrandImage)) {
+                    //  if (attachedFile.Name.indexOf('Brand') != -1) {
+                    //      attachedFilesToDelete.push(attachedFile.Id);
+                    //      itemsToDel.push(i);
+                    //  }
+                    // }
+                    if (newSecondImg == null && attachedFile.Id != newFirstImgId && attachedFile.Name.search(newFirstImgName) != -1) {
+                        attachedFilesToDelete.push(attachedFile.Id);
+                        itemsToDel.push(i);
+                        //recordsAttachedFiles.splice(i, 1);
+                    }
+                    else if (newSecondImg != null && attachedFile.Id != newFirstImgId && attachedFile.Id != newSecondImgId) {
+                        attachedFilesToDelete.push(attachedFile.Id);
+                        itemsToDel.push(i);
+                        //recordsAttachedFiles.splice(i, 1);
+                    }
+                }
+                console.log('@attachedFilesToDelete='+attachedFilesToDelete);
+                console.log('@itemsToDel='+itemsToDel);
+                console.log('@recordsAttachedFiles length='+recordsAttachedFiles.length);
+                var delResult = sforce.connection.deleteIds(attachedFilesToDelete);
+                // var delMarksResult = sforce.connection.deleteIds(marksToDelete);
+
+                function sortArray(a, b)
+                {
+                    return b - a;
+                }
+
+                itemsToDel.sort(sortArray);
+                itemsToDel.forEach(function(item, i, itemsToDel) {
+                    recordsAttachedFiles.splice(item, 1);
+                });
+                console.log('@recordsAttachedFiles='+recordsAttachedFiles);
+            }
+
+            if(recordsAttachedFiles.length > 1) {
+                if (recordsAttachedFiles[0].Name === recordsAttachedFiles[1].Name) {
+                    if (recordsAttachedFiles[1].Name.search('Customer') != -1) {
+                        $scope.customImageURL = imageURL + recordsAttachedFiles[1].Id;
+                        $scope.brandImageURL = null;
+                    } else if (recordsAttachedFiles[1].Name.search('Brand') != -1) {
+                        $scope.customImageURL = null;
+                        $scope.brandImageURL = imageURL + recordsAttachedFiles[1].Id;
+                    }
+                    var fileToDel = recordsAttachedFiles[0];
+                    var attachedFileToDel = [];
+                    attachedFileToDel.push(fileToDel.Id);
+                    var delResult2 = sforce.connection.deleteIds(attachedFileToDel);
+                }
+                else {
+                    $scope.brandImageURL = (recordsAttachedFiles[0].Name.search('Brand') != -1) ? imageURL + recordsAttachedFiles[0].Id : imageURL + recordsAttachedFiles[1].Id;
+                    $scope.customImageURL = (recordsAttachedFiles[0].Name.search('Customer') != -1) ? imageURL + recordsAttachedFiles[0].Id : imageURL + recordsAttachedFiles[1].Id;
+                }
+            }
+            else if (recordsAttachedFiles.length == 1) {
+                $scope.brandImageURL = (recordsAttachedFiles[0].Name.search('Brand') != -1) ? imageURL + recordsAttachedFiles[0].Id : null;
+                $scope.customImageURL = (recordsAttachedFiles[0].Name.search('Customer') != -1) ? imageURL + recordsAttachedFiles[0].Id : null;
+
+            }
+
+            //var strAttachments {'customImageUrl' : customImageURL, 'brandImageUrl' : brandImageURL, 'attachments' : recordsAttachedFiles}
+/*          $scope.attachments = JSON.stringify(attachments);
+
+            //-----------
+            $scope.attachments = JSON.parse(attachments);*/
+            $scope.upsertCustomerImage = false;
+            $scope.upsertBrandImage = false;
+            if (recordsAttachedFiles.length == 0 || $scope.customImageURL === null) {
+                $scope.upsertCustomerImage = true;
+            }
+            if (recordsAttachedFiles.length == 0 || $scope.brandImageURL === null) {
+                $scope.upsertBrandImage = true;
+            }
+
+
+            $scope.Loading = false;
+            // $scope.$apply();
+        }
+
+        $scope.saveMerchandisingMarks = function(accId, newBrandMarks, newCustomerMarks) {
+            var deferred = $q.defer();
+            var newBrandMark = new sforce.SObject("merchMarks__Merchandising_Marks__c");
+            var newCustomerMark = new sforce.SObject("merchMarks__Merchandising_Marks__c");
+            var marksToDelete = [];
+            var maxLen = 131072;
+            //var descrip = getDescription();
+
+            var listMarks = sforce.connection.query("SELECT Id FROM merchMarks__Merchandising_Marks__c WHERE merchMarks__Merchandising_Marks__c.merchMarks__Account__c ='" + accId + "' AND merchMarks__Merchandising_Marks__c.merchMarks__Description__c ='" + dscr + "' LIMIT 2");
+
+            var recordsMarks = listMarks.getArray('records');
+
+            for (var i = 0; i < recordsMarks.length; i++) {
+                marksToDelete.push(recordsMarks[i].Id);
+            }
+
+            if (marksToDelete.length > 0) {
+                var delMarksResult = sforce.connection.deleteIds(marksToDelete);
+            }
+
+            // newBrandMark.Name = 'Brand' + accId;
+            // newBrandMark.merchMarks__Account__c = accId;
+            // newBrandMark.merchMarks__Description__c = dscr;
+            newCustomerMark.Name = 'Customer' + accId;
+            newCustomerMark.merchMarks__Account__c = accId;
+            newCustomerMark.merchMarks__Description__c = dscr;
+
+            var marksToInsert = [];
+            // if (newBrandMarks != null) {
+            //     if (newBrandMarks.length > maxLen) {
+            //         newBrandMark.merchMarks__Cmarks__c = newBrandMarks.substring(0, maxLen - 1);
+            //         newBrandMark.merchMarks__CmarksExt__c = newBrandMarks.substr(maxLen - 1);
+            //     } else {
+            //         newBrandMark.merchMarks__Cmarks__c = newBrandMarks;
+            //     }
+            //     marksToInsert.push(newBrandMark);
+            // }
+
+            var needResize = false;
+            var numFuncs = 3;
+            var callback = function() {
+              numFuncs--;
+              if (numFuncs == 2) {
+                if (needResize) { afterAsyncOperation(); }
+              } else if (numFuncs == 1) {
+                splitMarks();
+              } else { createMarks(); }
+            }
+
+            var splitMarks = function() {
+                if (newCustomerMarks.length > maxLen) {
+                    newCustomerMark.merchMarks__Cmarks__c = newCustomerMarks.substring(0, maxLen - 1);
+                    newCustomerMark.merchMarks__CmarksExt__c = newCustomerMarks.substr(maxLen - 1);
+                } else {
+                    newCustomerMark.merchMarks__Cmarks__c = newCustomerMarks;
+                }
+                marksToInsert.push(newCustomerMark);
+                callback();
+            }
+
+            var createMarks = function() {
+                if(marksToInsert.length > 0) {
+                    try {
+                        var result = sforce.connection.upsert("Id", marksToInsert);
+                    }
+                    catch (e) {
+                        console.log(e);
+                    }
+                }
+                $scope.Loading = false;
+                return deferred.promise;
+                return 'OK';
+            }
+
+            if (newCustomerMarks != null) {
+                if (newCustomerMarks.length > (maxLen * 2)) {
+                    swal({  title: "Warning",
+                            text: "The Customer image is too large to upload. Objects can not be stored. <span style='color:#F8BB86'>Please reduce the size of the image and try again.</span>",
+                            type: "warning",
+                            showCancelButton: true,
+                            cancelButtonText: "OK",
+                            confirmButtonColor: "#DD6B55",
+                            confirmButtonText: "Resize now",
+                            closeOnConfirm: false,
+                            showLoaderOnConfirm: true,
+                            html: true
+                        },
+                            function() {
+                                setTimeout(function() {
+                                    swal("OK", "Process successfully finished!", "success");
+                                    needResize = true;
+                                    callback();
+                                }, 2000);
+                        });
+
+                    function imageToDataUri(img, width, height) {
+                        var canvas = document.createElement('canvas'),
+                            ctx = canvas.getContext('2d');
+                        canvas.width = width;
+                        canvas.height = height;
+                        ctx.drawImage(img, 0, 0, width, height);
+                        return canvas.toDataURL('image/jpeg', 0.85);
+                    }
+
+                    var afterAsyncOperation = function(){
+                        var base64data;
+                        JSON.parse(newCustomerMarks, function(key, value) {
+                          if (key === "src") {
+                             base64data = value;
+                          }
+                        });
+                        var img = new Image();
+                        img.src = base64data;
+                        var startpos = newCustomerMarks.lastIndexOf('"width":') + 8;
+                        var i = startpos;
+                        var width = '';
+                        while (newCustomerMarks[i] !== ',') {
+                            width += newCustomerMarks[i];
+                            i++;
+                        }
+                        startpos = newCustomerMarks.lastIndexOf('"height":') + 9;
+                        i = startpos;
+                        var height = '';
+                        while (newCustomerMarks[i] !== ',') {
+                            height += newCustomerMarks[i];
+                            i++;
+                        }
+                        var oldW = parseInt(width);
+                        var oldH = parseInt(height);
+                        var newW, newH;
+                        if (oldW >= oldH) {
+                            newW = 700;
+                            newH = Math.round(oldH*700/oldW);
+                        } else {
+                            newH = 700;
+                            newW = Math.round(oldW*700/oldH);
+                        }
+                        var newBase64data = imageToDataUri(img, oldW, oldH/*newW, newH*/);
+                        newCustomerMarks = newCustomerMarks.replace(base64data, newBase64data);
+                        callback();
+                    }
+                } else { numFuncs = 2; callback(); }
+
+            } else { numFuncs = 1; callback(); }
+
+        }
+
+        $scope.getMerchandisingMarks = function(accId) {
+            //var descrip = getDescription();
+            console.log('getMerchandisingMarks');
+            var marks = sforce.connection.query("SELECT Id, Name, merchMarks__Cmarks__c, merchMarks__CmarksExt__c, merchMarks__Account__r.Name FROM merchMarks__Merchandising_Marks__c WHERE merchMarks__Merchandising_Marks__c.merchMarks__Account__c ='" + accId + "' AND merchMarks__Merchandising_Marks__c.merchMarks__Description__c ='" + dscr + "' LIMIT 2");
+
+            if (marks.size == 0) {
+                $scope.Loading = false;
+                return null;
+            }
+
+            var recordsMarks = marks.getArray('records');
+            for (var i = 0; i < recordsMarks.length; i++) {
+                if (recordsMarks[i].Name.search('Custom') > -1) {
+                    if (recordsMarks[i].merchMarks__CmarksExt__c !== null) {
+                        LoadCanvasService.loadCanvas('Custom', recordsMarks[i].merchMarks__Cmarks__c + recordsMarks[i].merchMarks__CmarksExt__c);
+                    } else {
+                        LoadCanvasService.loadCanvas('Custom', recordsMarks[i].merchMarks__Cmarks__c);
+                    }
+                }
+                // else if (recordsMarks[i].Name.search('Brand') > -1) {
+                //     if (recordsMarks[i].merchMarks__CmarksExt__c !== null) {
+                //         LoadCanvasService.loadCanvas('Brand', recordsMarks[i].merchMarks__Cmarks__c + recordsMarks[i].merchMarks__CmarksExt__c);
+                //     } else {
+                //         LoadCanvasService.loadCanvas('Brand', recordsMarks[i].merchMarks__Cmarks__c);
+                //     }
+                // }
+            }
+        }
+//***********************************************************
+        $scope.getAttachments($scope.accId, null, null);
+        /*dataManager.getAttachments($scope.accId, null, null, getDescription()).then(function(attachments) {
+            $scope.attachments = JSON.parse(attachments);
+            if ($scope.attachments === null || $scope.attachments.customImageURL === null) {
+                $scope.upsertCustomerImage = true;
+            }
+            if ($scope.attachments === null || $scope.attachments.brandImageURL === null) {
+                $scope.upsertBrandImage = true;
+            }
+            $scope.Loading = false;
+        });*/
+
+        $scope.getMerchandisingMarks($scope.accId);
+        /*dataManager.getMerchandisingMarks($scope.accId).then(function(merchandisingMarksWrapper) {
+            $scope.merchandisingMarksWrapper = JSON.parse(merchandisingMarksWrapper);
+            if ($scope.merchandisingMarksWrapper === null || $scope.merchandisingMarksWrapper.length === 0) {
+                $scope.Loading = false;
+                return;
+            }
+            for (var i = 0; i < $scope.merchandisingMarksWrapper.length; i++) {
+                if ($scope.merchandisingMarksWrapper[i].Name.indexOf('Custom') > -1) {
+                    LoadCanvasService.loadCanvas('Custom', $scope.merchandisingMarksWrapper[i].Cmarks);
+                }
+                else if ($scope.merchandisingMarksWrapper[i].Name.indexOf('Brand') > -1) {
+                    LoadCanvasService.loadCanvas('Brand', $scope.merchandisingMarksWrapper[i].Cmarks);
+                }
+            }
+
+            $scope.Loading = false;
+        });*/
+        $scope.image = {};
+        $scope.image.customImage = '';
+        $scope.image.brandImage = '';
+        $scope.ImageFileName = {};
+        $scope.ImageFileName.brandName = '';
+        $scope.ImageFileName.customName = '';
+        $scope.ImageFileType = {};
+        $scope.ImageFileType.brandType = '';
+        $scope.ImageFileType.customType = '';
+
+        $scope.changeState = function() {
+            if ( $('#year').attr( 'disabled' ) === 'disabled' ) {
+                $('#year').prop('disabled', false);
+                $('#season').prop('disabled', false);
+            } else {
+                $('#year').prop('disabled', true);
+                $('#season').prop('disabled', true);
+            }
+        }
+
+        document.getElementById('selectSeason').ondblclick = function(){
+            if (this.selectedIndex === -1) { return; }
+            customer.clear();
+            brand.clear();
+            var description = document.getElementById("selectBrand").options[document.getElementById("selectBrand").selectedIndex].text + ';' + document.getElementById("selectYear").options[document.getElementById("selectYear").selectedIndex].text + ';' + document.getElementById("selectSeason").options[document.getElementById("selectSeason").selectedIndex].text;
+            var cBrand = document.getElementById("selectBrand").options[document.getElementById("selectBrand").selectedIndex].text;
+            var cYear = document.getElementById("selectYear").options[document.getElementById("selectYear").selectedIndex].text;
+            var cSeason = document.getElementById("selectSeason").options[document.getElementById("selectSeason").selectedIndex].text;
+            document.getElementById("cinfo").innerHTML = 'Brand: ' + cBrand + ' Year: ' + cYear + ' Season: ' + cSeason;
+            switch (document.getElementById("selectSeason").options[document.getElementById("selectSeason").selectedIndex].text) {
+                case 'Winter' : $('#selectBrand').css('background-color', '#5aa095'); $('#selectYear').css('background-color', '#5aa095'); $('#selectSeason').css('background-color', '#5aa095'); break
+                case 'Spring' : $('#selectBrand').css('background-color', '#83ca82'); $('#selectYear').css('background-color', '#83ca82'); $('#selectSeason').css('background-color', '#83ca82'); break
+                case 'Summer' : $('#selectBrand').css('background-color', '#dd9d72'); $('#selectYear').css('background-color', '#dd9d72'); $('#selectSeason').css('background-color', '#dd9d72'); break
+                case 'Autumn' : $('#selectBrand').css('background-color', '#ddd481'); $('#selectYear').css('background-color', '#ddd481'); $('#selectSeason').css('background-color', '#ddd481'); break
+            }
+            dscr = description;
+            $scope.getAttachments($scope.accId, null, null, description);
+            $scope.image.customImage = '';
+            $scope.image.brandImage = '';
+            $scope.ImageFileName.brandName = '';
+            $scope.ImageFileName.customName = '';
+            console.log('SSScustUrl'+$scope.customImageURL);
+            if (($scope.customImageURL != '') && ($scope.customImageURL != null)) {
+                dataManager.getAttachments2($scope.customImageURL).then(function(data) {
+                    console.log('data.byteLength='+data.byteLength);
+                    console.log('typeof(data)='+typeof(data));
+                    var binary = '';
+                    var bytes = new Uint8Array( data );
+                    var len = bytes.byteLength;
+                    for (var i = 0; i < len; i++) {
+                        binary += String.fromCharCode( bytes[ i ] );
+                    }
+                    var base64 = 'data:image/png;base64,' + window.btoa( binary );
+                    //console.log(base64); // image data
+                    imgToLoad(base64, 'customer', true);
+                    callback();
+            });
+            } else { callback(); }
+
+            console.log('SSSbrandUrl'+$scope.brandImageURL);
+            if (($scope.brandImageURL != '') && ($scope.brandImageURL != null)) {
+                dataManager.getAttachments2($scope.brandImageURL).then(function(data) {
+                    console.log('data.byteLength='+data.byteLength);
+                    console.log('typeof(data)='+typeof(data));
+                    var binary = '';
+                    var bytes = new Uint8Array( data );
+                    var len = bytes.byteLength;
+                    for (var i = 0; i < len; i++) {
+                        binary += String.fromCharCode( bytes[ i ] );
+                    }
+                    var base64 = 'data:image/png;base64,' + window.btoa( binary );
+                    //console.log(base64); // image data
+                    imgToLoad(base64, 'brand', true);
+                    callback();
+            });
+            } else { callback(); }
+            var numFuncs = 2;
+            var callback = function(){
+              numFuncs--;
+              if(numFuncs == 0) {
+                afterAsyncOperation();
+              }
+            }
+            var afterAsyncOperation = function(){
+                $scope.getMerchandisingMarks($scope.accId);
+            }
+        };
+
+        $scope.savePNG = function() {
+            html2canvas($("#workPanel"), {
+                allowTaint: false,
+                useCORS: false,
+                logging: true,
+                taintTest: false,
+                background: '#ffffff',
+                width: 1570,
+                onrendered: function(canvas) {
+                    theCanvas = canvas;
+                    var canv = document.getElementById("workPanel").appendChild(canvas);
+                    var imgInfo = (dscr === '') ? getDescription().replace(/;/g, "_") : dscr.replace(/;/g, "_");
+                    canv.setAttribute("id", "tmp_canvas");
+                    canvas.toBlobHD(function(blob) {
+                        saveAs(blob, "BFS_" + imgInfo + ".png");
+                    });
+                    canvas.style.display="none";
+                    document.getElementById("workPanel").removeChild(document.getElementById("tmp_canvas"));
+                }
+            });
+        }
+
+        $scope.sendMail = function() {
+            var sContent;
+            var sMessage = '';
+            var sUsername = 0;
+            var sName = sforce.connection.query("SELECT Id, PrimaryContact, InstanceName FROM Organization LIMIT 1").getArray("records");
+            var server = sName[0].InstanceName.toLowerCase();
+            var orgID = sName[0].Id;
+            var sOwner = sforce.connection.query("SELECT Id, Username, Name, Email FROM User WHERE Name = '" + sName[0].PrimaryContact + "' AND IsActive = true ORDER BY Username").getArray("records");
+            if (sOwner.length > 1) {
+                var ownersStr = '';
+                for (var i = 0; i < sOwner.length; i++) {
+                    ownersStr += (i + 1) + '). ' + sOwner[i].Username + '; ';
+                }
+                sUsername = prompt('Found ' + sOwner.length + ' users with the name matching to Primary Contact (' + sName[0].PrimaryContact + '). Please choose the correct Username: ' + ownersStr, 1) - 1;
+            }
+            swal({
+                title: "E-Mail message",
+                text: "Input message text:",
+                type: "input",
+                showCancelButton: true,
+                closeOnConfirm: true,
+                animation: "slide-from-top",
+                inputPlaceholder: "Text"
+            },
+            function(inputValue) {
+                if (inputValue === false) return false;
+                if (inputValue === "") {
+                     swal.showInputError("You need to write something!");
+                     return false
+                }
+                sMessage = inputValue;
+                callback();
+            });
+            var numFuncs = 2;
+            var callback = function(){
+              numFuncs--;
+              if(numFuncs == 1) {
+                afterAsyncOperation();
+              } else if (numFuncs == 0) {
+                afterAsyncOperation2();
+              }
+            }
+
+            var afterAsyncOperation = function() {
+                html2canvas($("#workPanel"), {
+                    allowTaint: false,
+                    useCORS: false,
+                    logging: true,
+                    taintTest: false,
+                    background: '#ffffff',
+                    width: 1570,
+                    onrendered: function(canvas) {
+                        theCanvas = canvas;
+                        var canv = document.getElementById("workPanel").appendChild(canvas);
+                        var imgInfo = (dscr === '') ? getDescription().replace(/;/g, "_") : dscr.replace(/;/g, "_");
+                        canv.setAttribute("id", "tmp_canvas");
+                        sContent = canvas.toDataURL();
+                        canvas.style.display="none";
+                        document.getElementById("workPanel").removeChild(document.getElementById("tmp_canvas"));
+                        callback();
+                    }
+                });
+            }
+
+            var afterAsyncOperation2 = function() {
+                var attachedFile = sforce.connection.query("SELECT Id, Name, LastModifiedDate FROM Document WHERE Name = '" + dscr + "' ORDER BY LastModifiedDate");
+                var dummyFolder = sforce.connection.query("SELECT Id FROM Folder LIMIT 1").getArray('records')[0];
+                if (attachedFile.size > 0) {
+                    var to_del = attachedFile.getArray('records')[0];
+                    var delResult = sforce.connection.deleteIds([to_del.Id]);
+                }
+                var attachment = new sforce.SObject("Document");
+                attachment.Name = dscr;
+                attachment.FolderId = dummyFolder.Id;
+                attachment.ContentType = 'image/png';
+                attachment.Body = sContent.substr(sContent.indexOf(";base64,") + 8);
+                attachment.Description = new Date();
+                attachment.IsPublic = true;
+                var result = sforce.connection.create([attachment]);
+                var newAttachedFile = sforce.connection.query("SELECT Id, Name, LastModifiedDate FROM Document WHERE Name = '" + dscr + "' ORDER BY LastModifiedDate").getArray('records')[0];
+                var iURL = 'https://c.' + server + '.content.force.com/servlet/servlet.ImageServer?id=' + newAttachedFile.Id + '&oid=' + orgID;
+                console.log('>> iURL: ' + iURL);
+                var sBrand = dscr.split(';')[0];
+                var sYear = dscr.split(';')[1]
+                var sSeason = dscr.substring(dscr.lastIndexOf(";") + 1, dscr.length);
+                var service_id = 'gmail';
+                var template_id = 'gmail';
+                var template_params = {
+                    subj: 'BFS: New Image (' + dscr +')',
+                    brand: sBrand,
+                    year: sYear,
+                    season: sSeason,
+                    message_html: sMessage,
+                    org_owner: sOwner[sUsername].Email,
+                    owner_name: sName[0].PrimaryContact,
+                    img_data: iURL
+                };
+                emailjs.send(service_id, template_id, template_params);
+            }
+
+        }
+
+        $scope.save = function() {
+            if ((document.getElementById("selectSeason").selectedIndex === -1) && (document.getElementById("selectBrand").selectedIndex !== 0)) { return; }
+            //option not selected - err msg, return
+            $scope.Loading = true;
+            var deferred = $q.defer();
+            var attachments = [];
+            var isNewC = false;
+            var isNewB = false;
+            errMsg = false;
+            if ($scope.image.customImage !== '') {
+                // $('div').each(function() {
+                //  if ($(this).attr('id') === 'upsCustomer') {
+                //      if ($(this).find('img').attr('id') === 'ImgA') {
+                //          var maxWidth = 700;
+                //          var maxHeight = 700;
+                //          var ratio = 0;
+                //          var width = $("#ImgA").width();
+                //          var height = $("#ImgA").height();
+                //          if(width > maxWidth) {
+                //              ratio = maxWidth / width;
+                //              $("#ImgAA").css("width", maxWidth);
+                //              $("#ImgAA").css("height", height * ratio);
+                //              height = height * ratio;
+                //              width = width * ratio;
+                //          }
+
+                //          if(height > maxHeight){
+                //              ratio = maxHeight / height;
+                //              $("#ImgAA").css("height", maxHeight);
+                //              $("#ImgAA").css("width", width * ratio);
+                //              width = width * ratio;
+                //              height = height * ratio;
+                //          }
+                //          var fillClass = (height > width)
+                //          ? 'ImgAH img'
+                //          : 'ImgAW img';
+                //          $("#ImgAA").addClass(fillClass);
+                //          var fillClass1 = (height > width)
+                //          ? 'ImgAH'
+                //          : 'ImgAW';
+                //          $("#ImgA").addClass(fillClass1);
+                //      }
+                //      }
+                // });
+                var attachment = new sforce.SObject("Attachment");
+                        attachment.Name = 'Customer.' + $scope.ImageFileName.customName.split('.')[1];
+                        attachment.ContentType = $scope.ImageFileType.customType;
+                        attachment.ParentId = $scope.accId;
+                        attachment.Body = $scope.image.customImage.split(',')[1];
+                        var isNew = false;
+                        if ((document.getElementById("selectBrand").selectedIndex) === 0) {
+                            if ((document.getElementById("newBrand").value === '') || (document.getElementById("newBrand").value === 'New')) {
+                                swal({ title: "Error", text: "Please enter Brand name!", type: "error", showConfirmButton: true, confirmButtonText: "OK" });
+                                errMsg = true;
+                            } else if ($scope.image.brandImage === '') {
+                                swal({ title: "Error", text: "Please load Brand image at first!", type: "error", showConfirmButton: true, confirmButtonText: "OK" });
+                                errMsg = true;
+                            } else {
+                                isNew = true;
+                                isNewC = true;
+                                //customer.getObjects().forEach(function(o){ customer.remove(o) });
+                            }
+                        }
+                        if (!errMsg) {
+                            if (!isNew) {
+                                attachment.Description = getDescription();
+                            } else {
+                                if ( $('#year').attr( 'disabled' ) === 'disabled' ) {
+                                    attachment.Description = getDescription2(document.getElementById("newBrand").value);
+                                } else {
+                                    attachment.Description = document.getElementById("newBrand").value + ';' + document.getElementById("year").options[document.getElementById("year").selectedIndex].text + ';' + document.getElementById("season").options[document.getElementById("season").selectedIndex].text;
+                                }
+                            }
+                            dscr = attachment.Description;
+                            attachments.push(attachment);
+                        }
+            }
+            if ($scope.image.brandImage !== '') {
+                var attachment = new sforce.SObject("Attachment");
+                        attachment.Name = 'Brand.' + $scope.ImageFileName.brandName.split('.')[1];
+                        attachment.ContentType = $scope.ImageFileType.brandType;
+                        attachment.ParentId = $scope.accId;
+                        attachment.Body = $scope.image.brandImage.split(',')[1];
+                        var isNew = false;
+                        if ((document.getElementById("selectBrand").selectedIndex) === 0) {
+                            if ((document.getElementById("newBrand").value === '') || (document.getElementById("newBrand").value === 'New')) {
+                                if (!errMsg) { swal({ title: "Error", text: "Please enter Brand name!", type: "error", showConfirmButton: true, timer: 5000, confirmButtonText: "OK" }); errMsg = true; }
+                            } else {
+                                isNew = true;
+                                isNewB = true;
+                                //brand.getObjects().forEach(function(o){ brand.remove(o) });
+                            }
+                        }
+                        if (!errMsg) {
+                            if (!isNew) {
+                                attachment.Description = getDescription();
+                            } else {
+                                if ( $('#year').attr( 'disabled' ) === 'disabled' ) {
+                                    attachment.Description = getDescription2(document.getElementById("newBrand").value);
+                                } else {
+                                    attachment.Description = document.getElementById("newBrand").value + ';' + document.getElementById("year").options[document.getElementById("year").selectedIndex].text + ';' + document.getElementById("season").options[document.getElementById("season").selectedIndex].text;
+                                }
+                            }
+                            dscr = attachment.Description;
+                            attachments.push(attachment);
+                        }
+            }
+            if ($scope.image.customImage === '' && $scope.image.brandImage === '') {
+                // alert("Please choose some image.");
+                        var merchandisingCustomerMarkContainer = SaveCanvasService.saveCanvas('Customer');
+                        var merchandisingBrandMarkContainer = SaveCanvasService.saveCanvas('Brand');
+                        //console.log(merchandisingBrandMarkContainer);
+                        //console.log(merchandisingCustomerMarkContainer);
+
+                        $scope.saveMerchandisingMarks($scope.accId, merchandisingBrandMarkContainer, merchandisingCustomerMarkContainer);
+                        //dataManager.saveMerchandisingMarks($scope.accId, merchandisingBrandMarkContainer, merchandisingCustomerMarkContainer);
+                $scope.Loading = false;
+                return deferred.promise;
+            }
+
+            if (!errMsg) {
+            sforce.connection.create(attachments, {
+                onSuccess: function(attach, source) {
+                    if (attach[0].getBoolean("success")) {
+                        var newFirstImg = null;
+                        var newSecondImg = null;
+                        //var descr = getDescription();
+                        if (attach[1] !== null && attach[1] !== undefined) {
+                            newFirstImg = 'Customer' + ';' + attach[0].get("id");
+                            newSecondImg = 'Brand' + ';' + attach[1].get("id");
+                        }
+                        else if ($scope.image.customImage != '') {
+                            newFirstImg = 'Customer' + ';' + attach[0].get("id");
+                        }
+                        else {
+                            newFirstImg = 'Brand' + ';' + attach[0].get("id");
+                        }
+                        $scope.getAttachments($scope.accId, newFirstImg, newSecondImg, dscr);
+                        $scope.image.customImage = '';
+                        $scope.image.brandImage = '';
+                        $scope.ImageFileName.brandName = '';
+                        $scope.ImageFileName.customName = '';
+                        console.log('SSScustUrl'+$scope.customImageURL);
+                        if (($scope.customImageURL != '') && ($scope.customImageURL != null)) {
+                            dataManager.getAttachments2($scope.customImageURL).then(function(data) {
+                                console.log('data.byteLength='+data.byteLength);
+                                console.log('typeof(data)='+typeof(data));
+                                var binary = '';
+                                var bytes = new Uint8Array( data );
+                                var len = bytes.byteLength;
+                                for (var i = 0; i < len; i++) {
+                                    binary += String.fromCharCode( bytes[ i ] );
+                                }
+                                var base64 = 'data:image/png;base64,' + window.btoa( binary );
+                                // console.log(base64); // image data
+                                imgToLoad(base64, 'customer', isNewC);
+                                callback();
+                        });
+                        }
+
+                        var saveBrand = function() {
+	                        console.log('SSSbrandUrl'+$scope.brandImageURL);
+	                        if (($scope.brandImageURL != '') && ($scope.brandImageURL != null)) {
+	                            dataManager.getAttachments2($scope.brandImageURL).then(function(data) {
+	                                console.log('data.byteLength='+data.byteLength);
+	                                console.log('typeof(data)='+typeof(data));
+	                                var binary = '';
+	                                var bytes = new Uint8Array( data );
+	                                var len = bytes.byteLength;
+	                                for (var i = 0; i < len; i++) {
+	                                    binary += String.fromCharCode( bytes[ i ] );
+	                                }
+	                                var base64 = 'data:image/png;base64,' + window.btoa( binary );
+	                                // console.log(base64); // image data
+	                                imgToLoad(base64, 'brand', isNewB);
+	                                callback();
+	                        });
+	                        }
+                    	}
+
+			            var numFuncs = 2;
+			            var callback = function() {
+			              numFuncs--;
+			              if (numFuncs == 1) {
+			              	saveBrand();
+			              } else if (numFuncs == 0) {
+			              	saveMarks();
+			              }
+			            }
+                        // if   (isNewC) { /*customer.clear().renderAll();*/ customer.getObjects().forEach(function(o){ customer.remove(o) }); customer.renderAll(); }
+                        // if   (isNewB) { /*brand.clear().renderAll();*/ brand.getObjects().forEach(function(o){ brand.remove(o) }); brand.renderAll(); }
+                        var saveMarks = function() {
+	                        var merchandisingCustomerMarkContainer = SaveCanvasService.saveCanvas('Customer');
+	                        var merchandisingBrandMarkContainer = SaveCanvasService.saveCanvas('Brand');
+	                        $scope.saveMerchandisingMarks($scope.accId, merchandisingBrandMarkContainer, merchandisingCustomerMarkContainer);
+                        }
+
+                        /*dataManager.getAttachments($scope.accId, newFirstImg, newSecondImg, descr).then(function(attachments) {
+                            $scope.attachments = JSON.parse(attachments);
+                            if ($scope.attachments !== null && $scope.attachments.customImageURL !== null) {
+                                $scope.upsertCustomerImage = false;
+                            }
+                            if ($scope.attachments !== null && $scope.attachments.brandImageURL !== null) {
+                                $scope.upsertBrandImage = false;
+
+                            }
+
+                            $scope.image.customImage = '';
+                            $scope.image.brandImage = '';
+                            $scope.ImageFileName.brandName = '';
+                            $scope.ImageFileName.customName = '';
+                        });*/
+	                    $scope.Loading = false;
+						$scope.$apply();
+                        var sBrand = dscr.split(';')[0];
+                        var sYear = dscr.split(';')[1]
+                        var sSeason = dscr.substring(dscr.lastIndexOf(";") + 1, dscr.length);
+                        document.getElementById("newBrand").value = '';
+                        $('#newBrand').css("display", "none");
+                        $('#year').css("display", "none");
+                        $('#season').css("display", "none");
+                        $('#edit').css("display", "none");
+                        removeOptionsB(document.getElementById("selectBrand"));
+                        removeOptions(document.getElementById("selectYear"));
+                        removeOptions(document.getElementById("selectSeason"));
+                        var allBrands = sforce.connection.query("SELECT Id, Description FROM Attachment WHERE Attachment.parentId = '" + $scope.accId + "' AND Attachment.Name LIKE 'Brand%' ORDER BY Attachment.Description");
+                        var recordsAllBrands = allBrands.getArray('records');
+                        var brands = [];
+                        var seasons = [];
+                        for (var i = 0; i < recordsAllBrands.length; i++) {
+                            brands.push(recordsAllBrands[i].Description.split(';')[0]);
+                        }
+                        var brands_unique = [];
+                        $.each(brands, function(i, e) {
+                            if ($.inArray(e, brands_unique) == -1) { brands_unique.push(e); };
+                        });
+
+                        $.each(brands_unique, function(i, e) {
+                            document.getElementById("selectBrand").options[i+1] = new Option(e, e);
+                        });
+                        $('#selectBrand').val(sBrand);
+                        document.getElementById("selectYear").options[0] = new Option(sYear, sYear);
+                        $('#selectYear').val(sYear);
+                        document.getElementById("selectSeason").options[0] = new Option(sSeason, sSeason);
+                        $('#selectSeason').val(sSeason);
+                        document.getElementById("cinfo").innerHTML = 'Brand: ' + sBrand + ' Year: ' + sYear + ' Season: ' + sSeason;
+                        switch (sSeason) {
+                            case 'Winter' : $('#selectBrand').css('background-color', '#5aa095'); $('#selectYear').css('background-color', '#5aa095'); $('#selectSeason').css('background-color', '#5aa095'); break
+                            case 'Spring' : $('#selectBrand').css('background-color', '#83ca82'); $('#selectYear').css('background-color', '#83ca82'); $('#selectSeason').css('background-color', '#83ca82'); break
+                            case 'Summer' : $('#selectBrand').css('background-color', '#dd9d72'); $('#selectYear').css('background-color', '#dd9d72'); $('#selectSeason').css('background-color', '#dd9d72'); break
+                            case 'Autumn' : $('#selectBrand').css('background-color', '#ddd481'); $('#selectYear').css('background-color', '#ddd481'); $('#selectSeason').css('background-color', '#ddd481'); break
+                        }
+                        return deferred.promise;
+                    }
+                    else{
+                        console.log(attach + 'err1');
+                        $scope.Loading = false;
+                        return deferred.reject("failed to create attachments");
+                    }
+                },
+                onFailure: function(error, source) {
+                    console.log(error);
+                    console.log(source);
+                    console.log(error + 'err2');
+                    console.log(source + 'err2');
+                    $scope.Loading = false;
+                    return deferred.reject("failed to create attachments");
+                },
+                 onComplete: function(html)
+                 {
+                    console.log($scope.Loading);
+                 },
+                 onRequest: function()
+            {
+                console.log($scope.Loading);
+            }
+
+            });
+            } else {
+                $scope.Loading = false;
+                return deferred.promise;
+             }
+        }
+
+        $scope.focusHandler = function focusHandler(ev) {
+            if (!$scope.upsertCustomerImage) {
+                var toDo = false;
+                    var getID = ev;
+                    switch (getID) {
+                        case 'arrow':
+                            if ($scope.elemArray[0] === 0) { toDo = true; $scope.elemArray = [1, 0, 0, 0, 0]; }
+                            break;
+                        case 'box':
+                            if ($scope.elemArray[1] === 0) { toDo = true; $scope.elemArray = [0, 1, 0, 0, 0]; }
+                            break;
+                        case 'line':
+                            if ($scope.elemArray[2] === 0) { toDo = true; $scope.elemArray = [0, 0, 1, 0, 0]; }
+                            break;
+                        case 'text':
+                            if ($scope.elemArray[3] === 0) { toDo = true; $scope.elemArray = [0, 0, 0, 1, 0]; }
+                            break;
+                        case 'question':
+                            if ($scope.elemArray[4] === 0) { toDo = true; $scope.elemArray = [0, 0, 0, 0, 1]; }
+                            break;
+                    }
+                    console.log($scope.elemArray + ' ' + toDo);
+                    if (toDo) { console.log(ev); FocusService.focusCanvas(getID, $scope.elemArray); }
+            }
+        }
+    });
+
+    // app.directive('stopPropagation', function () {
+    //  return {
+    //      restrict: 'A',
+    //      link: function (scope, element) {
+    //          element.bind('focus', function (e) {
+    //              return false;
+    //          });
+    //      }
+    //  };
+    // });
+
+    app.directive("fileread", [function () {
+        return {
+            scope: {
+                fileread: "=",
+                fileName: '=',
+                fileType: '='
+            },
+            link: function (scope, element, attributes) {
+                var checkSize,
+                isTypeValid,
+                processDragOverOrEnter,
+                validMimeTypes;
+                processDragOverOrEnter = function (event) {
+                    if (event != null) {
+                        event.preventDefault();
+                    }
+                    event.dataTransfer.effectAllowed = 'copy';
+                    return false;
+                }
+                validMimeTypes = attributes.fileDropzone;
+
+                checkSize = function(size) {
+                    var _ref;
+                    if (((_ref = attributes.maxFileSize) === (void 0) || _ref === '') || (size / 1024) / 1024 < attributes.maxFileSize) {
+                        return true;
+                    }
+                    else {
+                        alert("File must be smaller than " + attributes.maxFileSize + " MB");
+                        return false;
+                    }
+                };
+
+                isTypeValid = function(type) {
+                    if ((validMimeTypes === (void 0) || validMimeTypes === '') || validMimeTypes.indexOf(type) > -1) {
+                        return true;
+                    }
+                    else {
+                        alert("Invalid file type.  File must be one of following types " + validMimeTypes);
+                        return false;
+                    }
+                };
+
+                element.bind('dragover', processDragOverOrEnter);
+                element.bind('dragenter', processDragOverOrEnter);
+
+                element.bind("change", function (changeEvent) {
+                    var file, fileread, name, reader, size, type;
+                    var reader = new FileReader();
+                    reader.onload = function (loadEvent) {
+                        if (checkSize(size) && isTypeValid(type)) {
+                            scope.$apply(function () {
+                                scope.fileread = loadEvent.target.result;
+                                if (angular.isString(scope.fileName)) {
+                                    scope.fileName = name;
+                                }
+                                if (angular.isString(scope.fileType)) {
+                                    scope.fileType = type;
+                                }
+                            });
+                        }
+                    }
+                    file = changeEvent.target.files[0];
+                    name = file.name;
+                    type = file.type;
+                    reader.readAsDataURL(file);
+                    return true;
+                });
+
+                element.bind('drop', function(event) {
+                    var file, fileread, name, reader, size, type;
+                    if (event != null) {
+                        event.preventDefault();
+                    }
+                    if ((event.target.id === "brandImageFile") && (!dropzone)) {
+                        swal({ title: "Error", text: "Only the System Administrator can upload this image!", type: "error", showConfirmButton: true, confirmButtonText: "OK" });
+                    } else if ((event.target.id === "customerImageFile") && (!cdropzone)) {
+                        swal({ title: "Error", text: "Only the System Administrator or Sales Rep can upload this image!", type: "error", showConfirmButton: true, confirmButtonText: "OK" });
+                    } else {
+                    reader = new FileReader();
+                    reader.onload = function(evt) {
+                        if (checkSize(size) && isTypeValid(type)) {
+                            return scope.$apply(function() {
+                                scope.fileread = evt.target.result;
+                                if (angular.isString(scope.fileName)) {
+                                    scope.fileName = name;
+                                }
+                                if (angular.isString(scope.fileType)) {
+                                    scope.fileType = type;
+                                }
+                            });
+                        }
+                    };
+                    file = event.dataTransfer.files[0];
+                    name = file.name;
+                    type = file.type;
+                    reader.readAsDataURL(file);
+                    return true; }
+                });
+            }
+        }
+    }]);
+
+    app.directive('stopEvent', function () {
+        return {
+            restrict: 'A',
+            link: function (scope, element, attr) {
+                if(attr && attr.stopEvent)
+                    element.bind(attr.stopEvent, function (e) {
+                        e.stopPropagation();
+                    });
+            }
+        };
+     });
+
+    //drag'n'drop
+            app.directive('merchDraggable', function(dragHandler) {
+                return {
+                    restrict: 'A',
+                    link : function(scope, element, attr) {
+                        var el = element[0];
+
+                        if (attr.merchDraggable === 'draggable') {
+                            el.setAttribute("draggable", true);
+
+                            el.addEventListener('dragstart', dragHandler.dragstart, false);
+                            el.addEventListener('dragend', dragHandler.dragend, false);
+                        }
+                    }
+                }
+            });
+
+            app.directive('merchDroppable', function(dropHandler, $rootScope) {
+                 return {
+                    restrict: 'A',
+                    link : function(scope, element, attr) {
+                        var el = element[0];
+
+                        if (attr.merchDroppable === 'droppable') {
+                            el.setAttribute("droppable", true);
+
+                            el.addEventListener('dragover', dropHandler.dragover, false);
+                            el.addEventListener('dragenter', dropHandler.dragenter, false);
+                            el.addEventListener('dragleave', dropHandler.dragleave, false);
+                            el.addEventListener('drop', dropHandler.drop($rootScope, scope), false);
+                        }
+                    }
+                }
+            });
+
+            app.service('dragHandler', function() {
+                return {
+                    dragstart : function(ev) {
+                        if (ev.target.id) {
+                            ev.dataTransfer.effectAllowed = "copy";
+                            console.log( ev.target.id);
+                            ev.dataTransfer.setData("text", ev.target.id);
+                        }
+                    },
+                    dragend : function(ev) {
+                        ev.preventDefault();
+                    }
+                };
+            });
+
+            app.service('dropHandler', function($http, ArrowService, BoxService, LineService, TextService) {
+                return {
+                    dragover : function(ev) {
+                        ev.preventDefault();
+
+                        if (ev.target.classList.contains("back")) {
+                            ev.dataTransfer.dropEffect = "copy";
+                        }
+                    },
+                    dragenter : function(ev) {
+                        ev.preventDefault();
+                    },
+                    dragleave : function(ev) {
+                        ev.preventDefault();
+                    },
+                    drop : function(rootScope, scope) {
+                        return function(ev) {
+                            ev.preventDefault();
+                            scope.upsertMarks = true;
+                            scope.objColor = document.getElementById("draw_color").value;
+                            console.log(scope.upsertMarks);
+                            if (ev.target.className.indexOf('Customer') > -1) {
+                                if (ev.dataTransfer.getData("text") === 'arrow') {
+                                     ArrowService.addArrow(scope.objColor, ev.layerX, ev.layerY);
+                                }
+                                if (ev.dataTransfer.getData("text") === 'box') {
+                                     BoxService.addBox(scope.objColor, ev.layerX, ev.layerY);
+                                }
+                                if (ev.dataTransfer.getData("text") === 'line') {
+                                     LineService.addLine(scope.objColor, ev.layerX, ev.layerY);
+                                }
+                                if (ev.dataTransfer.getData("text") === 'text') {
+                                     TextService.addText(scope.objColor, ev.layerX, ev.layerY, fontControl.val());
+                                }
+                            }
+                        };
+                    }
+                };
+            });
+
+            // app.service('focusHandler', function($http, ArrowService, BoxService, LineService, TextService) {
+            //  return {
+            //      focus : function(rootScope, scope) {
+            //          return function(ev) {
+            //              ev.preventDefault();
+            //              if (ev.dataTransfer.getData("text") === 'arrow') {
+            //                   ArrowService.addArrow(ev.target.className, scope.objColor, ev.layerX, ev.layerY);
+            //              }
+            //              if (ev.dataTransfer.getData("text") === 'box') {
+            //                   BoxService.addBox(ev.target.className, scope.objColor, ev.layerX, ev.layerY);
+            //              }
+            //              if (ev.dataTransfer.getData("text") === 'line') {
+            //                   LineService.addLine(ev.target.className, scope.objColor, ev.layerX, ev.layerY);
+            //              }
+            //              if (ev.dataTransfer.getData("text") === 'text') {
+            //                   TextService.addText(ev.target.className, scope.objColor, ev.layerX, ev.layerY);
+            //              }
+            //          };
+            //      }
+            //  };
+            // });
+
+            app.directive('ngDraggable', function(dragHandler) {
+                return {
+                    restrict: 'A',
+                    link : function(scope, element, attr) {
+                        var el = element[0];
+
+                        if (attr.ngDraggable === 'draggable') {
+                            el.setAttribute("draggable", true);
+
+                            el.addEventListener('dragstart', dragHandler.dragstart, false);
+                            el.addEventListener('dragend', dragHandler.dragend, false);
+                        }
+                    }
+                }
+            });
+
+            app.directive('ngDroppable', function(dropHandler, $rootScope) {
+                 return {
+                    restrict: 'A',
+                    link : function(scope, element, attr) {
+                        var el = element[0];
+
+                        if (attr.ngDroppable === 'droppable') {
+                            el.setAttribute("droppable", true);
+
+                            el.addEventListener('dragover', dropHandler.dragover, false);
+                            el.addEventListener('dragenter', dropHandler.dragenter, false);
+                            el.addEventListener('dragleave', dropHandler.dragleave, false);
+                            el.addEventListener('drop', dropHandler.drop($rootScope, scope), false);
+                        }
+                    }
+                }
+            });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    var json;
+    var HideBoxControls = {
+                'tl':true,
+                'tr':false,
+                'bl':true,
+                'br':true,
+                'ml':true,
+                'mt':true,
+                'mr':true,
+                'mb':true,
+                'mtr':true
+            };
+    var overObj = false;
+    var movingObj = false;
+    var startY;
+    var prevColor;
+    var isDown;
+    document.getElementById("draw_color").value = "#FF0000";
+    var objColor = document.getElementById("draw_color").value;
+    var customer = new fabric.Canvas('Customer');
+    var brand = new fabric.Canvas('Brand');
+    var activeCanvas = customer;
+    var activeObject, initialCanvas;
+    var zoom = 0;
+    prevColor = objColor;
+
+    customer.isDrawingMode = false;
+    customer.freeDrawingBrush.width = 5;
+    customer.renderOnAddRemove  = true;
+
+    brand.isDrawingMode = false;
+    brand.freeDrawingBrush.width = 5;
+    brand.renderOnAddRemove  = true;
+    /*
+     * make brand canvas uneditable
+     */
+
+    // customer.observe('object:scaling', function (e) {
+    //  var obj = e.target;
+    //   if(obj.getHeight() > obj.canvas.height || obj.getWidth() > obj.canvas.width){
+    //      obj.setScaleY(obj.originalState.scaleY);
+    //      obj.setScaleX(obj.originalState.scaleX);
+    //   }
+    //   obj.setCoords();
+    //   if(obj.getBoundingRect().top - (obj.cornerSize / 2) < 0 ||
+    //       obj.getBoundingRect().left -  (obj.cornerSize / 2) < 0) {
+    //     obj.top = Math.max(obj.top, obj.top-obj.getBoundingRect().top + (obj.cornerSize / 2));
+    //     obj.left = Math.max(obj.left, obj.left-obj.getBoundingRect().left + (obj.cornerSize / 2));
+    //   }
+    //   if(obj.getBoundingRect().top+obj.getBoundingRect().height + obj.cornerSize  > obj.canvas.height || obj.getBoundingRect().left+obj.getBoundingRect().width + obj.cornerSize  > obj.canvas.width) {
+
+    //     obj.top = Math.min(obj.top, obj.canvas.height-obj.getBoundingRect().height+obj.top-obj.getBoundingRect().top - obj.cornerSize / 2);
+    //     obj.left = Math.min(obj.left, obj.canvas.width-obj.getBoundingRect().width+obj.left-obj.getBoundingRect().left - obj.cornerSize /2);
+    //   }
+    // });
+
+    // customer.observe('object:moving', function (e) {
+    //  var obj = e.target;
+    //   if(obj.getHeight() > obj.canvas.height || obj.getWidth() > obj.canvas.width){
+    //      obj.setScaleY(obj.originalState.scaleY);
+    //      obj.setScaleX(obj.originalState.scaleX);
+    //   }
+    //   obj.setCoords();
+    //   if(obj.getBoundingRect().top - (obj.cornerSize / 2) < 0 ||
+    //       obj.getBoundingRect().left -  (obj.cornerSize / 2) < 0) {
+    //     obj.top = Math.max(obj.top, obj.top-obj.getBoundingRect().top + (obj.cornerSize / 2));
+    //     obj.left = Math.max(obj.left, obj.left-obj.getBoundingRect().left + (obj.cornerSize / 2));
+    //   }
+    //   if(obj.getBoundingRect().top+obj.getBoundingRect().height + obj.cornerSize  > obj.canvas.height || obj.getBoundingRect().left+obj.getBoundingRect().width + obj.cornerSize  > obj.canvas.width) {
+
+    //     obj.top = Math.min(obj.top, obj.canvas.height-obj.getBoundingRect().height+obj.top-obj.getBoundingRect().top - obj.cornerSize / 2);
+    //     obj.left = Math.min(obj.left, obj.canvas.width-obj.getBoundingRect().width+obj.left-obj.getBoundingRect().left - obj.cornerSize /2);
+    //   }
+    // });
+
+    var fontControl = $('#font-control');
+
+    function imgToLoad(imgBase64Data, canvas, isnew) {
+        canv = (canvas === 'customer') ? customer : brand;
+        if (isnew) { /*canv.backgroundImage = 0; */canv.clear().renderAll(); }
+        var fnc = function(oImg) {
+          oImg.setLeft(0);
+          oImg.setTop(0);
+          oImg.set('selectable', false);
+          oImg.hoverCursor = 'default';
+          var ih = oImg.height;
+          var iw = oImg.width;
+          canv.setBackgroundImage(oImg);
+          canv.backgroundImage.width = canv.getWidth();
+          canv.backgroundImage.height = Math.round(ih * canv.getWidth() / iw);
+          canv.renderAll();
+          // customer.add(oImg);
+          // customer.sendToBack(oImg);
+          // customer.renderAll();
+          }
+
+        fabric.Image.fromURL(imgBase64Data, fnc, {
+          crossOrigin: "Anonymous"
+        });
+
+        fabric.log('JSON canvas "' + canvas + '": ', canv.toJSON());
+    }
+
+    function textBoxChanged() {
+        if(activeCanvas.getActiveObject()) {
+            if (activeCanvas.getActiveObject().get('type') === 'i-text') {activeCanvas.getActiveObject().set({fontFamily: fontControl.val()}); activeCanvas.renderAll();}
+        }
+    }
+
+    function contrastButtons(x, y) {
+        var blockSize = 5,
+            invNeed = false,
+            canvasElement = document.getElementById('Customer'),
+            context = canvasElement.getContext("2d"),
+            data, width, height,
+            i = -4,
+            length,
+            rgb = {r:0,g:0,b:0},
+            count = 0;
+
+        if (!context) {
+            return defaultRGB;
+        }
+
+        height = 20;
+        width = 20;
+
+        try {
+            data = context.getImageData(x, y, width, height);
+        } catch(e) {
+            console.log(e);
+            return false;
+        }
+
+        length = data.data.length;
+
+        while ( (i += blockSize * 4) < length ) {
+            ++count;
+            rgb.r += data.data[i];
+            rgb.g += data.data[i+1];
+            rgb.b += data.data[i+2];
+        }
+
+        // ~~ used to floor values
+        rgb.r = ~~(rgb.r/count);
+        rgb.g = ~~(rgb.g/count);
+        rgb.b = ~~(rgb.b/count);
+
+        console.log("r="+rgb.r+", g="+rgb.g+", b="+rgb.b);
+        var o = Math.round(((rgb.r * 299) + (rgb.g * 587) + (parseInt(rgb.b) * 114)) /1000);
+        console.log("avg color="+o);
+        if (o > 125) {
+            invNeed = false;
+            //console.log('>> BLACK <<');
+        } else {
+            invNeed = true;
+            //console.log('>> WHITE <<');
+        }
+        return invNeed;
+    }
+
+    function addFillBtn(x, y) {
+        $(".fillBtn").remove();
+        var imgToLoad = 'fill.png';
+        var btnLeft = x+5;
+        var btnTop = y-10;
+        // if (contrastButtons(btnLeft, btnTop)) {
+        //     imgToLoad = 'inv_' + imgToLoad;
+        // }
+        var fillBtn = '<img src="{!URLFOR($Resource.buttons, "'+ imgToLoad +'")}" class="fillBtn" style="position:absolute;top:'+btnTop+'px;left:'+btnLeft+'px;cursor:pointer;width:32px;height:32px;opacity:0.6; z-index: 999;"/>';
+        fillBtn.selectable = false;
+        $("#MerchandisingCustomerMarkContainer").append(fillBtn);
+        $(".fillBtn").hover(
+            function() {
+                $(this).stop().animate({"opacity": "1"}, "slow");
+            },
+            function() {
+                $(this).stop().animate({"opacity": "0.6"}, "slow");
+        });
+    }
+
+    function addDelBtn(x, y) {
+        $(".delBtn").remove();
+        var imgToLoad = 'delete.png';
+        var btnLeft = x+5;
+        var btnTop = y+24;
+        // if (contrastButtons(btnLeft, btnTop)) {
+        //     imgToLoad = 'inv_' + imgToLoad;
+        // }
+        var delBtn = '<img src="{!URLFOR($Resource.buttons, "'+ imgToLoad +'")}" class="delBtn" style="position:absolute;top:'+btnTop+'px;left:'+btnLeft+'px;cursor:pointer;width:32px;height:32px;opacity:0.6; z-index: 999;"/>';
+        delBtn.selectable = false;
+        $("#MerchandisingCustomerMarkContainer").append(delBtn);
+        $(".delBtn").hover(
+            function() {
+                $(this).stop().animate({"opacity": "1", "invert": "1"}, "slow");
+            },
+            function() {
+                $(this).stop().animate({"opacity": "0.6"}, "slow");
+        });
+    }
+
+    function detectBrowserSize() {
+        var myWidth = 0, myHeight = 0;
+        if (typeof (window.innerWidth) == 'number') {
+            //Non-IE
+            myWidth = window.innerWidth;
+            myHeight = window.innerHeight;
+        } else if (document.documentElement && (document.documentElement.clientWidth ||   document.documentElement.clientHeight)) {
+            //IE 6+ in 'standards compliant mode'
+            myWidth = document.documentElement.clientWidth;
+            myHeight = document.documentElement.clientHeight;
+        } else if (document.body && (document.body.clientWidth || document.body.clientHeight)) {
+            //IE 4 compatible
+            myWidth = document.body.clientWidth;
+            myHeight = document.body.clientHeight;
+        }
+        return [myWidth, myHeight];
+    }
+
+    var mouse_positionX, mouse_positionY;
+    var animating = false;
+    var cw, ch;
+
+    $(document).mousemove(function (e) {
+       if (animating) {
+           return;
+       }
+        mouse_positionX = e.clientX;
+        mouse_positionY = e.clientY;
+        cw = $(window).width();//detectBrowserSize()[0];
+        ch = $(window).height();//detectBrowserSize()[1];
+
+       if ((mouse_positionX >= cw - 650) && (mouse_positionY >= ch - 142)) {
+           $('#info').css("display", "none");
+           animating = true;
+           $('#rightBottomSidebar').animate({
+               right: 0,
+               opacity: 1
+           }, 200, function () {
+               animating = false;
+           });
+       } else if ((mouse_positionX < cw - 650) || (mouse_positionY < ch - 142)) {
+           animating = true;
+           $('#rightBottomSidebar').animate({
+               right: -650,
+               opacity: 0
+           }, 800, function () {
+               animating = false;
+           });
+       }
+   });
+
+    $(document).on('click',".fillBtn",function(){
+        if(activeCanvas.getActiveObject())
+        {
+            var isFill = activeCanvas.getActiveObject().get('fill');
+            if ((isFill !== false) && (isFill !== 'transparent')) { activeCanvas.getActiveObject().setFill(false); }
+            else { activeCanvas.getActiveObject().setFill(document.getElementById("draw_color").value); }
+            activeCanvas.getActiveObject().set({stroke: document.getElementById("draw_color").value});
+            activeCanvas.renderAll();
+            var fill_type = activeCanvas.getActiveObject().get('type');
+            switch (fill_type) {
+                case 'path':
+                    $('#box').focus();
+                    break
+                case 'rect':
+                    $('#box').focus();
+                    break
+            }
+        }
+    });
+
+    $(document).on('click',".delBtn",function(o){
+        var pointer = activeCanvas.getPointer(o.e);
+        origY = pointer.y;
+        console.log(">> del Y="+origY);
+        if(activeCanvas.getActiveObject())
+        {
+            var del_type = activeCanvas.getActiveObject().get('type');
+            activeCanvas.remove(activeCanvas.getActiveObject());
+            $(".fillBtn").remove();
+            $(".delBtn").remove();
+            switch (del_type) {
+                case 'group':
+                    $('#arrow').focus();
+                    break
+                case 'path':
+                    $('#box').focus();
+                    break
+                case 'line':
+                    $('#line').focus();
+                    break
+                case 'i-text':
+                    $('#text').focus();
+                    break
+                case 'rect':
+                    $('#box').focus();
+                    break
+            }
+        }
+    });
+
+    /*    $(document).on('mouseup', function(evt) {
+        if(evt.target.localName === 'canvas') {
+            canvasId = $(evt.target).siblings().attr('id');
+            switch (canvasId) {
+                case 'holder': activeCanvas = canvas;
+                case 'holder2': activeCanvas = canvas2;
+            }
+            activeObject  = {};
+        }
+    });*/
+
+/*    $(document).on('mousedown', function(evt) {
+          isDown = true;
+          movingObj = false;
+          var pointer = activeCanvas.getPointer(evt.e);
+          origX = pointer.x;
+          origY = pointer.y;
+          startY = origY;
+          console.log(origX+"  "+origY);
+          if(!activeCanvas.getActiveObject())
+            {
+                $(".fillBtn").remove();
+                $(".delBtn").remove();
+            }
+          else if ((activeCanvas.getActiveObject().get('type') === 'group') || (activeCanvas.getActiveObject().get('type') === 'line') || (activeCanvas.getActiveObject().get('type') === 'i-text')) {$(".fillBtn").remove();}
+    });*/
+
+    var OnClick = function(Sender, EventArgs)
+    {
+        //Code
+    }
+
+    function getSeason() {
+        var month = new Date().getMonth();
+        var season = '';
+        switch(month) {
+            case 11:
+            case 0:
+            case 1:
+                season = 'Winter';
+            break;
+            case 2:
+            case 3:
+            case 4:
+                season = 'Spring';
+            break;
+            case 5:
+            case 6:
+            case 7:
+                season = 'Summer';
+            break;
+            case 8:
+            case 9:
+            case 10:
+                season = 'Autumn';
+            break;
+        }
+        $('#season').val(season);
+        return(season);
+    }
+
+    function getDescription() {
+        var year = new Date().getFullYear();
+        var season = getSeason();
+        var descr = (document.getElementById("selectBrand").options[document.getElementById("selectBrand").selectedIndex].text === 'New') ?
+                    document.getElementById("selectBrand").options[document.getElementById("selectBrand").selectedIndex].text + ';' +
+                        year + ';' +
+                        season
+                    : document.getElementById("selectBrand").options[document.getElementById("selectBrand").selectedIndex].text + ';' +
+                        document.getElementById("selectYear").options[document.getElementById("selectYear").selectedIndex].text + ';' +
+                        document.getElementById("selectSeason").options[document.getElementById("selectSeason").selectedIndex].text;
+        return descr;
+    }
+
+    function getDescription2(newVal) {
+        var descr = getDescription().replace('New;', newVal + ';');
+        return descr;
+    }
+
+    // window.onload = function() {
+    //  console.log('loaded...');
+    //  var listboxID = document.getElementById('selectBrand');
+ //     var oListBoxBrand, oListBoxYear, oListBoxSeason;
+ //        var Arguments = {
+ //            Base: listboxID,
+ //            Rows: 5,
+ //            Width: 200,
+ //            NormalItemColor: null,
+ //            NormalItemBackColor: null,
+ //            AlternateItemColor: null,
+ //            AlternateItemBackColor: null,
+ //            SelectedItemColor: null,
+ //            SelectedIItemBackColor: null,
+ //            HoverItemColor: null,
+ //            HoverItemBackColor: null,
+ //            HoverBorderdColor: null,
+ //            ClickEventHandler: OnClick
+ //        };
+
+ //        oListBoxBrand = new ListBox(Arguments);
+
+ //        oListBoxBrand.AddItem('CodeProject.com','http://www.codeproject.com');
+ //        oListBoxBrand.AddItem('yahoo.com','http://www.yahoo.com/');
+ //        oListBoxBrand.AddItem
+    //  ('microsoft.com','http://www.microsoft.com/en/us/default.aspx');
+ //        oListBoxBrand.AddItem('asp.net','http://www.asp.net');
+ //        oListBoxBrand.AddItem('cricinfo.com','http://www.cricinfo.com/');
+ //        oListBoxBrand.AddItem('AOL','http://www.aol.com/');
+ //        oListBoxBrand.AddItem('STPL','http://stpl.biz');
+
+ //        listboxID = document.getElementById('selectYear');
+ //        oListBoxYear = new ListBox(Arguments);
+
+ //        listboxID = document.getElementById('selectSeason');
+ //        oListBoxSeason = new ListBox(Arguments);
+    // }
+
+    // window.onunload = function(){oListBox.Dispose(); }
+
+    function savePrevColor(){
+        prevColor = document.getElementById("draw_color").value;
+    }
+
+    function changeColorGroup(){
+        //картинке тоже цвет меняем
+        if (!activeCanvas.getActiveObject()) { document.getElementById("draw_color").value = prevColor;} else
+        {
+            savePrevColor();
+            var objType = activeCanvas.getActiveObject().get('type');
+            console.log(">> object_type=" + objType);
+            console.log(">> color=" + document.getElementById("draw_color").value);
+            console.log(">> prev_color=" + prevColor);
+            switch (objType) {
+                case 'group':
+                    activeCanvas.getActiveObject().setFill(document.getElementById("draw_color").value);
+                    //canvas.getActiveObject().set({fill: document.getElementById("draw_color").value});
+                    activeCanvas.getActiveObject().set({stroke: document.getElementById("draw_color").value});
+                    break
+                case 'path':
+                    var isFill = activeCanvas.getActiveObject().get('fill');
+                    if (isFill !== false) { activeCanvas.getActiveObject().setFill(document.getElementById("draw_color").value); }
+                    activeCanvas.getActiveObject().set({stroke: document.getElementById("draw_color").value});
+                    break
+                case 'line':
+                    activeCanvas.getActiveObject().set({stroke: document.getElementById("draw_color").value});
+                    break
+                case 'i-text':
+                    activeCanvas.getActiveObject().setFill(document.getElementById("draw_color").value);
+                    //canvas.getActiveObject().set({fill: document.getElementById("draw_color").value});
+                    break
+                case 'rect':
+                    var isFill = activeCanvas.getActiveObject().get('fill');
+                    if ((isFill !== false) && (isFill !== 'transparent')) { activeCanvas.getActiveObject().setFill(document.getElementById("draw_color").value); }
+                    activeCanvas.getActiveObject().set({stroke: document.getElementById("draw_color").value});
+                    break
+            }
+            activeCanvas.renderAll();
+        }
+    }
+
+    customer.on({
+        'object:scaling': function(e) {
+            activeCanvas = customer;
+            canvasId = this.lowerCanvasEl.id;
+            $(".fillBtn").remove();
+            $(".delBtn").remove();
+            var obj = e.target;
+            if(obj.myCustomOptionKeepStrokeWidth){
+                var newStrokeWidth = obj.myCustomOptionKeepStrokeWidth / ((obj.scaleX + obj.scaleY) / 2);
+                obj.set('strokeWidth',newStrokeWidth);
+            }
+        }
+    });
+
+
+    customer.on('object:selected',function(e){
+        brand.deactivateAll().renderAll();
+        activeCanvas = customer;
+        canvasId = this.lowerCanvasEl.id;
+        savePrevColor();
+        var objType = activeCanvas.getActiveObject().get('type');
+        console.log(">>TYPE="+objType);
+        if (objType === 'group' || objType === 'i-text') {
+            $(".fillBtn").remove();
+            document.getElementById("draw_color").value = activeCanvas.getActiveObject().get('fill');
+            if (objType === 'i-text') { document.getElementById("font-control").value = activeCanvas.getActiveObject().get('fontFamily'); }
+        }
+        else if (objType === 'line' || objType === 'path' || objType === 'rect')
+            {document.getElementById("draw_color").value = activeCanvas.getActiveObject().get('stroke'); if (objType === 'line') {$(".fillBtn").remove();}}
+        addDelBtn(e.target.oCoords.tr.x, e.target.oCoords.tr.y);
+        if ((e.target.get('type') === 'path') || (e.target.get('type') === 'rect')) {
+            e.target.setControlsVisibility(HideBoxControls);
+            addFillBtn(e.target.oCoords.tr.x, e.target.oCoords.tr.y);
+        }
+    });
+
+    customer.on('object:modified',function(e){
+        activeCanvas = customer;
+        canvasId = this.lowerCanvasEl.id;
+        addDelBtn(e.target.oCoords.tr.x, e.target.oCoords.tr.y);
+        if ((e.target.get('type') === 'path') || (e.target.get('type') === 'rect')){
+            e.target.setControlsVisibility(HideBoxControls);
+            addFillBtn(e.target.oCoords.tr.x, e.target.oCoords.tr.y);
+        }
+    });
+
+    activeCanvas.on("object:over", function (o) {
+        overObj = true;
+        console.log("object:over");
+    });
+
+    activeCanvas.on("object:out", function (o) {
+        overObj = false;
+        console.log("object:out");
+    });
+
+/*  customer.on('mouse:up', function(o){
+      canvasId = this.lowerCanvasEl.id;
+      activeCanvas = customer;
+      console.log(">> canvasId="+canvasId);
+      isDown = false;
+      if (movingObj) {console.log("object moved!");
+          var pointer = activeCanvas.getPointer(o.e);
+          origY = pointer.y;
+          var objType = activeCanvas.getActiveObject().get('type');
+          if (origY > 30 && startY < 30) {
+                switch (objType) {
+                    case 'group':
+                        addArrow(document.getElementById("draw_color").value, 10, 10);
+                        break
+                    case 'path':
+                        addBox(document.getElementById("draw_color").value, 120, 0);
+                        break
+                    case 'line':
+                        addLine(document.getElementById("draw_color").value, 230, 10);
+                        break
+                    case 'i-text':
+                        addText(document.getElementById("draw_color").value, 340, 0, fontControl.val());
+                        break
+                }
+          }
+      movingObj = false;}
+    });*/
+
+    customer.on('object:moving', function (o) {
+        $(".fillBtn").remove();
+        $(".delBtn").remove();
+        o.target.bringToFront();
+        movingObj = true;
+    });
+
+    customer.on('object:rotating', function (o) {
+        $(".fillBtn").remove();
+        $(".delBtn").remove();
+    });
+
+    customer.on('mouse:move', function(o){
+      if (!isDown) return;
+      var pointer = customer.getPointer(o.e);
+    });
+
+    customer.on('text:changed', function(e){
+        if ( !e.target.isContainedWithinRect(new fabric.Point(0, 0), new fabric.Point(700, 700)) ) {
+            e.target.scaleToWidth(680 - e.target.oCoords.tl.x);
+        }
+    });
+
+    function color()
+    {
+        return customer.freeDrawingBrush.color;
+    }
+
+    function setColor(color)
+    {
+        customer.freeDrawingBrush.color = color;
+    }
+
+    function setLineControls(line)
+    {
+        line.setControlVisible("tr",false);
+        line.setControlVisible("tl",false);
+        line.setControlVisible("br",false);
+        line.setControlVisible("bl",false);
+    }
+
+    function addLine(color, x, y) {
+        var pts = [x,y,x,y];
+        setColor(color);
+        var line = createLine(pts, color);
+        setLineControls(line);
+        activeCanvas.add(line);
+        return line;
+    }
+
+
+    function createLine(points, color)
+    {
+        var line = new fabric.Line(points,
+            {
+                strokeWidth: 5,
+                stroke: color,
+                originX: 'center',
+                originY: 'center',
+                lockScalingX:false,
+                lockScalingY:false
+            }
+        );
+        setLineControls(line);
+        return line;
+    }
+
+    function createArrowHead(points, color) {
+        var headLength = 15,
+
+                x1 = points[0],
+                y1 = points[1],
+                x2 = points[2],
+                y2 = points[3],
+
+                dx = x2 - x1,
+                dy = y2 - y1,
+
+                angle = Math.atan2(dy, dx);
+
+        angle *= 180 / Math.PI;
+        angle += 90;
+
+        var triangle = new fabric.Triangle(
+            {
+                angle: angle,
+                fill: color,
+                top: y2,
+                left: x2,
+                height: headLength,
+                width: headLength,
+                originX: 'center',
+                originY: 'center'
+            }
+        );
+
+        return triangle;
+    }
+
+    function addArrow(color, x, y, x1, y1) {
+        var pts = [x,y,x1,y1];
+        setColor(color);
+        var triangle = createArrowHead(pts, color);
+        var line = createLine(pts, color);
+        // var grp = new fabric.Group([triangle,line]);
+        // setLineControls(grp);
+        // activeCanvas.add(grp);
+        activeCanvas.add(triangle);
+        activeCanvas.add(line);
+        return {Line: line, Triangle: triangle};
+    }
+
+    // function addBox(color, x, y) {
+    //  var path = new fabric.Path(roundPathCorners('M0 0 L 100 0 L100 30 L 0 30 Z', 4, false), {
+    //      stroke: color,
+    //      strokeWidth: 3,
+    //      width: 10,
+    //      height: 10,
+    //      fill: false,
+    //      originX: 'left',
+    //      originY: 'top'
+    //  });
+    //  path.set({ left: x, top: y });
+    //  path.myCustomOptionKeepStrokeWidth = 3;
+    //  activeCanvas.add(path);
+    //  return path;
+    // }
+
+    function addBox(color, x, y, w, h) {
+        setColor(color);
+
+        var rect = new fabric.Rect({
+            top : y,
+            left : x,
+            // width : (w === undefined) ? 100 : w,
+            // height : (h === undefined) ? 30 : h,
+            fill : 'transparent',
+            stroke: color,
+            strokeWidth: 3,
+        });
+        rect.myCustomOptionKeepStrokeWidth = 3;
+        activeCanvas.add(rect);
+        return rect;
+    }
+
+    function addLine(color, x, y) {
+        var pts = [x,y,x,y];
+        setColor(color);
+        var line = createLine(pts, color);
+        setLineControls(line);
+        activeCanvas.add(line);
+        return line;
+    }
+
+    function addText(color, x, y, font_name) {
+        var pts = [x+100,y,x,y];
+        var mytext = new fabric.IText('ABC', {
+          // fontFamily: font_name,
+          left: x,
+          top: y ,
+          fill: color,
+          fontSize: 0
+        });
+        activeCanvas.add(mytext);
+        return mytext;
+    }
+
+    function mouseclickHandler(elem) {
+        console.log(elem);
+/*      if(elem.className.indexOf('Brand') > -1) {
+            activeCanvas = brand;
+        }
+        else */
+        if(elem.className.indexOf('Customer') > -1) {
+            activeCanvas = customer;
+        }
+        console.log(activeCanvas);
+    }
+
+    (function() {
+        'use strict';
+
+        angular
+            .module('MerchandisingApp')
+            .service('ArrowService', arrowService);
+
+        function arrowService() {
+            var service = {
+                addArrow: addArrow
+            };
+
+            return service;
+
+            function addArrow(color, x, y) {
+                var pts = [x+100,y,x,y];
+                setColor(color);
+                var triangle = createArrowHead(pts, color);
+                var line = createLine(pts, color);
+                var grp = new fabric.Group([triangle,line]);
+                setLineControls(grp);
+                activeCanvas = customer;
+                customer.add(grp);
+            }
+        }
+    })();
+
+    (function() {
+        'use strict';
+
+        angular
+            .module('MerchandisingApp')
+            .service('BoxService', BoxService);
+
+        function BoxService() {
+            var service = {
+                addBox: addBox
+            };
+
+            return service;
+
+            function addBox(color, x, y) {
+                var path = new fabric.Path(roundPathCorners('M0 0 L 100 0 L100 30 L 0 30 Z', 4, false), {
+                    stroke: color,
+                    strokeWidth: 3,
+                    fill: false,
+                    originX: 'left',
+                    originY: 'top'
+                });
+                path.set({ left: x, top: y });
+                path.myCustomOptionKeepStrokeWidth = 3;
+                activeCanvas = customer;
+                customer.add(path);
+                return path;
+            }
+        }
+    })();
+
+    (function() {
+        'use strict';
+
+        angular
+            .module('MerchandisingApp')
+            .service('LineService', LineService);
+
+        function LineService() {
+            var service = {
+                addLine: addLine
+            };
+
+            return service;
+
+            function addLine(color, x, y) {
+                var pts = [x+100,y,x,y];
+                setColor(color);
+                var line = createLine(pts, color);
+                setLineControls(line);
+                activeCanvas = customer;
+                customer.add(line);
+                return line;
+            }
+        }
+    })();
+
+    (function() {
+        'use strict';
+
+        angular
+            .module('MerchandisingApp')
+            .service('TextService', TextService);
+
+        function TextService() {
+            var service = {
+                addText: addText
+            };
+
+            return service;
+
+            function addText(color, x, y, font_name) {
+                var pts = [x+100 , y, x, y];
+                var mytext = new fabric.IText('Text', {
+                    fontFamily: font_name,
+                    left: x,
+                    top: y ,
+                    fontSize: 32,
+                    fill: color,
+                });
+                activeCanvas = customer;
+                customer.add(mytext);
+            }
+        }
+    })();
+
+    (function() {
+        'use strict';
+
+        angular
+            .module('MerchandisingApp')
+            .service('SaveCanvasService', SaveCanvasService);
+
+        function SaveCanvasService() {
+            var service = {
+                saveCanvas: saveCanvas
+            };
+
+            return service;
+
+            function saveCanvas(selectedCanvas) {
+                fabric.Object.NUM_FRACTION_DIGITS = 10;
+                if(selectedCanvas.indexOf('Brand') > -1) {
+                    json = JSON.stringify(brand);
+                    // console.log('>> JSON -> ' + json);
+                    return json;
+                }
+                if(selectedCanvas.indexOf('Customer') > -1) {
+                    json = JSON.stringify(customer);
+                    // console.log('>> JSON -> ' + json);
+                    return json;
+                }
+            }
+        }
+    })();
+
+    (function() {
+        'use strict';
+
+        angular
+            .module('MerchandisingApp')
+            .service('LoadCanvasService', LoadCanvasService);
+
+        function LoadCanvasService() {
+            var service = {
+                loadCanvas: loadCanvas
+            };
+
+            return service;
+
+            function loadCanvas(selectedCanvas, json) {
+                console.log(selectedCanvas);
+                if (json) {
+                    if(selectedCanvas.indexOf('Brand') > -1) {
+                        brand.loadFromJSON(json, brand.renderAll.bind(brand), function(o, object) {
+                            fabric.log(o, object);
+                        });
+                    }
+                    if(selectedCanvas.indexOf('Custom') > -1) {
+                        customer.loadFromJSON(json, customer.renderAll.bind(customer), function(o, object) {
+                            fabric.log(o, object);
+                        });
+                    }
+                }
+            }
+        }
+    })();
+
+        (function() {
+            'use strict';
+
+            angular
+                .module('MerchandisingApp')
+                .service('FocusService', FocusService);
+
+            function FocusService() {
+                var service = {
+                    focusCanvas: focusCanvas
+                };
+
+                return service;
+
+                function focusCanvas(objType, elemArray) {
+                        var circle, isDown, origXX, origYY, line, box, arrow, text, question;
+                        activeCanvas.deactivateAll().renderAll();
+                        activeCanvas.selection = false;
+                        activeCanvas = customer;
+
+                        activeCanvas.__eventListeners["mouse:down"] = [];
+                        activeCanvas.__eventListeners["mouse:up"] = [];
+                        activeCanvas.__eventListeners["mouse:move"] = [];
+
+                        activeCanvas.on('mouse:down', function(o){
+                            var act = document.activeElement.id;
+                            console.log(o.e);
+                            console.log('act: ' + act);
+                            o.e.preventDefault();
+                            o.e.stopPropagation();
+                            isDown = true;
+                            var pointer = activeCanvas.getPointer(o.e);
+                            origXX = pointer.x;
+                            origYY = pointer.y;
+                            console.log(objType);
+                            if(!activeCanvas.getActiveObject())
+                                {
+                                    $(".fillBtn").remove();
+                                    $(".delBtn").remove();
+                                    console.log(elemArray);
+                                    switch (objType) {
+                                        case 'arrow':
+                                            if ((elemArray[0] === 1) && (act === 'arrow')) {
+                                                arrow = addArrow(document.getElementById("draw_color").value, origXX, origYY, origXX, origYY);
+                                            }
+                                            break;
+                                        case 'box':
+                                            if ((elemArray[1] === 1) && (act === 'box')) {
+                                                box = addBox(document.getElementById("draw_color").value, origXX, origYY, 0, 0);
+                                            }
+                                            break;
+                                        case 'line':
+                                            if ((elemArray[2] === 1) && (act === 'line')) {
+                                                line = addLine(document.getElementById("draw_color").value, origXX, origYY);
+                                            }
+                                            break;
+                                        case 'text':
+                                            if ((elemArray[3] === 1) && (act === 'text')) {
+                                                text = addText(document.getElementById("draw_color").value, origXX, origYY, fontControl.val());
+                                            }
+                                            break;
+                                        case 'question':
+                                            if ((elemArray[4] === 1) && (act === 'question')) {
+                                                question = addText(document.getElementById("draw_color").value, origXX, origYY, fontControl.val());
+                                            }
+                                        break;
+                                    }
+                            }
+                            else if ((activeCanvas.getActiveObject().get('type') === 'group') || (activeCanvas.getActiveObject().get('type') === 'line') || (activeCanvas.getActiveObject().get('type') === 'i-text')) {$(".fillBtn").remove(); $(".ansBtn").remove();}
+                            else if (activeCanvas.getActiveObject().get('type') === 'textbox') {$(".fillBtn").remove();}
+                            else if (activeCanvas.getActiveObject().get('type') === 'path') {$(".ansBtn").remove();}
+                    });
+
+
+                    activeCanvas.on('mouse:move', function(o) {
+                            if (!isDown) return;
+
+                            var pointer = activeCanvas.getPointer(o.e);
+                            if(!activeCanvas.getActiveObject()) {
+                                var act = document.activeElement.id;
+                                switch (objType) {
+                                    case 'arrow':
+                                        if ((elemArray[0] === 1) && (act === 'arrow')) {
+                                            arrow.Line.set({x1:pointer.x, y1:pointer.y});
+
+                                            var curAngle = arrow.Triangle.getAngle();
+                                            var dy = pointer.y - origYY;
+                                            var dx = pointer.x - origXX;
+                                            var theta = Math.atan2(dy, dx); // range (-PI, PI]
+                                            theta *= 180 / Math.PI; // rads to degs, range (-180, 180]
+                                            if (theta < 0) theta = 360 + theta; // range [0, 360)
+                                            arrow.Triangle.setAngle(theta -  90);
+                                        }
+                                        break;
+                                    case 'box':
+                                        if ((elemArray[1] === 1) && (act === 'box')) {
+                                            box.set('width', pointer.x - origXX);
+                                            box.set('height', pointer.y - origYY);
+                                        }
+                                        break;
+                                    case 'line':
+                                        if ((elemArray[2] === 1) && (act === 'line')) {
+                                            line.set({x2: pointer.x, y2: pointer.y });
+                                        }
+                                        break;
+                                    case 'text':
+                                        if ((elemArray[3] === 1) && (act === 'text')) {
+                                            text.set('fontSize', pointer.x - origXX);
+                                        }
+                                        break;
+                                    case 'question':
+                                        if ((elemArray[4] === 1) && (act === 'question')) {
+                                            question(document.getElementById("draw_color").value, 340, 0, fontControl.val());
+                                        }
+                                        break;
+                                }
+                                activeCanvas.renderAll();
+                            }
+                        });
+
+                        activeCanvas.on('mouse:up', function(o){
+                            isDown = false;
+                            o.e.preventDefault();
+                            o.e.stopPropagation();
+                            var pointer = activeCanvas.getPointer(o.e);
+                            if(!activeCanvas.getActiveObject()) {
+                                var act = document.activeElement.id;
+                                switch (objType) {
+                                    case 'arrow':
+                                        if ((elemArray[0] === 1) && (act === 'arrow')) {
+                                            if ((Math.abs(pointer.x - origXX) > 10) || (Math.abs(pointer.y - origYY) > 10)) {
+                                                var group = new fabric.Group([arrow.Triangle, arrow.Line]);
+                                                activeCanvas.add(group);
+                                            }
+                                            activeCanvas.remove(arrow.Triangle);
+                                            activeCanvas.remove(arrow.Line);
+                                        }
+                                        break
+                                    case 'box':
+                                        if ((elemArray[1] === 1) && (act === 'box')) {
+                                            if ((Math.abs(pointer.x - origXX) <= 10) && (Math.abs(pointer.y - origYY) <= 10)) {
+                                                activeCanvas.remove(box);
+                                            } else box.setCoords();
+                                        }
+                                        break
+                                    case 'line':
+                                        if ((elemArray[2] === 1) && (act === 'line')) {
+                                            if ((Math.abs(pointer.x - origXX) <= 10) && (Math.abs(pointer.y - origYY) <= 10)) {
+                                                activeCanvas.remove(line);
+                                            } else line.setCoords();
+                                        }
+                                        break
+                                    case 'text':
+                                        if ((elemArray[3] === 1) && (act === 'text')) {
+                                            if (Math.abs(pointer.x - origXX) <= 20) {
+                                                activeCanvas.remove(text);
+                                            } else text.setCoords();
+                                        }
+                                        break
+                                    }
+                                activeCanvas.renderAll();
+                                //activeCanvas.off('mouse:down');
+                                // $('#'+objType).focus();
+                            }
+                        });
+                }
+            }
+        })();
+
+    </script>
+</apex:page>
